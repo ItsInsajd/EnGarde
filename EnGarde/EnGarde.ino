@@ -41,7 +41,7 @@ namespace Game {
     player.init();
     player.setPosition(world.playerPos.x, world.playerPos.y);
     createEnemies();
-    camera.setPosition(player.posX-camera.camWidth/2, player.posY-camera.camHeight/2);
+    camera.setPosition(player.posX, player.posY);
   }
 
   void updatePlayer() {
@@ -56,24 +56,22 @@ namespace Game {
     
     gb.display.setCursor(0, 9);
     gb.display.print(gb.getFreeRam());
-    gb.display.setCursor(0, 18);
-    gb.display.print(exitPos.x);
-    gb.display.setCursor(0, 27);
-    gb.display.print(exitPos.y);
-    if (gb.buttons.repeat(BUTTON_UP, 3)) {
+    
+    if (gb.buttons.repeat(BUTTON_UP, 5)) {
       advanceTurn(0, -1);
     }
-    if (gb.buttons.repeat(BUTTON_DOWN, 3)) {
+    if (gb.buttons.repeat(BUTTON_DOWN, 5)) {
       advanceTurn(0, 1);
     }
-    if (gb.buttons.repeat(BUTTON_RIGHT, 3)) {
+    if (gb.buttons.repeat(BUTTON_RIGHT, 5)) {
       player.changeDirection(_right);
       advanceTurn(1, 0);
     }
-    if (gb.buttons.repeat(BUTTON_LEFT, 3)) {
+    if (gb.buttons.repeat(BUTTON_LEFT, 5)) {
       player.changeDirection(_left);
       advanceTurn(-1, 0);
     }
+    camera.moveCamera(player.posX, player.posY);
   }
 
   void advanceTurn(int x, int y) {
@@ -97,7 +95,6 @@ namespace Game {
     }
     
     TurnManager::incrementTurn();
-    camera.setPosition(player.posX-camera.camWidth/2, player.posY-camera.camHeight/2);
 
     for (byte i = 0; i < world.maxEnemies; ++i) {
       Character* ch = enemies[i];

@@ -76,10 +76,12 @@ void World::setEnemyCounter() {
 }
 
 void World::draw() {
-  for (byte i = camera.posX; i <= camera.posX+camera.camWidth; ++i) {
-    for (byte j = camera.posY; j <= camera.posY+camera.camHeight; ++j) {
+  for (byte i = 0; i <= world_size; ++i) {
+    for (byte j = 0; j <= world_size; ++j) {
         int tile = world[i][j];
-
+        if (!camera.isInBounds(i, j)) {
+          //continue;
+        }
         if (tile != 1) {
           gb.display.drawImage(camera.screenPosX(i), camera.screenPosY(j), floorTile);
         } else if (tile == 1) {

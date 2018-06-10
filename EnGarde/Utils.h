@@ -10,8 +10,4 @@ struct Vec {
     Vec(short _x, short _y);
 };
 
-namespace Utils {
-  
-}
-
 #endif
