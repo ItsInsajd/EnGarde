@@ -5,7 +5,6 @@
 #include "Character.h"
 #include "World.h"
 #include "Utils.h"
-#include "AStar.h"
 
 namespace TurnManager {
   int turnCounter = 0;
@@ -82,7 +81,7 @@ namespace Game {
     int newX = player.posX + x;
     int newY = player.posY + y;
     
-    if (world.world[newX][newY] == 3) {
+    if (world.world[newX][newY] == 3 || world.world[newX][newY] == 5) {
       for (int i = 0; i < world.maxEnemies; ++i) {
         Character* ch = enemies[i];
         
@@ -101,7 +100,6 @@ namespace Game {
       int turnTimer = ch->getTurnCounter();
 
       if (TurnManager::canMove(turnTimer) && ch->isAlive) {
-        exitPos = astar.getNextTile(Vec(ch->posX, ch->posY), Vec(player.posX, player.posY));
         ch->takeAction(exitPos.x, exitPos.y);
       }
     }
@@ -115,19 +113,34 @@ namespace Game {
   }
 
   void createEnemies() {
-    int enemyCount = world.maxEnemies;
+    byte enemyCount = world.maxEnemies;
     enemies = new Character*[world.maxEnemies];
-    
+    byte* enemyTypes = new byte[enemyCount];
+
+    for (byte i = 0; i < enemyCount; ++i) {
+      enemyTypes[i] = random(0, 4);
+    }
+
     while (enemyCount > 0) {
       int randX = random(0, world_size);
       int randY = random(0, world_size);
           
       if (world.world[randX][randY] == surface && !isFloorTaken(randX, randY)) {
         --enemyCount;
-        enemies[enemyCount] = new Enemy(randX, randY, 2);
-        world.world[randX][randY] = 3;
+        if (enemyTypes[enemyCount] == 0) {
+          enemies[enemyCount] = new Skull(randX, randY, 1);
+        } else if (enemyTypes[enemyCount] == 1) {
+          enemies[enemyCount] = new Enemy(randX, randY, 2);
+        } else if (enemyTypes[enemyCount] == 2) {
+          enemies[enemyCount] = new BloodSkull(randX, randY, 1);
+        } else {
+          enemies[enemyCount] = new Ghost(randX, randY, 1);
+        }
+        world.world[randX][randY] = world.world[randX][randY] + 3;
       }
     }
+
+    delete enemyTypes;
   }
 
   bool isFloorTaken(int x, int y) {

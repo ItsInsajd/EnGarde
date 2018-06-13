@@ -22,8 +22,11 @@ class Character {
     virtual void takeAction(byte x, byte y);
 
   protected:
+    const Vec directions[4] = { Vec(0, -1), Vec(1, 0), Vec(0, 1), Vec(-1, 0) };
     int moveCounter;
     byte moveDir;
+
+    Vec getDirection();
 };
 
 class Player : public Character {
@@ -42,11 +45,26 @@ class Enemy : public Character {
     Enemy(byte _posX, byte _posY, byte _baseHp);
     void takeAction(byte x, byte y);
     void draw(int x, int y);
+};
 
-  private:
-    const Vec directions[4] = { Vec(0, -1), Vec(1, 0), Vec(0, 1), Vec(-1, 0) };
+class Skull : public Character {
+  public:
+    Skull(byte _posX, byte _posY, byte _baseHp);
+    void takeAction(byte x, byte y);
+    void draw(int x, int y);
+};
 
-    Vec getDirection();
+class BloodSkull : public Skull {
+  public:
+    BloodSkull(byte _posX, byte _posY, byte _baseHp);
+    void draw(int x, int y);
+};
+
+class Ghost : public Enemy {
+    public:
+    Ghost(byte _posX, byte _posY, byte _baseHp);
+    void takeAction(byte x, byte y);
+    void draw(int x, int y);
 };
 
 extern Player player;

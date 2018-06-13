@@ -7,15 +7,14 @@ void Camera::init() {
   worldHeight = sprite_size * world_size;
   camWidth = gb.display.width();
   camHeight = gb.display.height();
-  setPosition(0, 0);
 }
 
 void Camera::setPosition(int x, int y) {
   int nx = (x*sprite_size-camWidth/2);
   int ny = (y*sprite_size-camHeight/2);
     
-  posX = CLAMP(nx, 0, world_size-camWidth-1);
-  posY = CLAMP(ny, 0, world_size-camHeight-1);
+  posX = CLAMP(nx, 0, worldWidth-camWidth);
+  posY = CLAMP(ny, 0, worldWidth-camHeight);
 }
 
 void Camera::moveCamera(int x, int y) {

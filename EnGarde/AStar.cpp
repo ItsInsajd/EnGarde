@@ -124,7 +124,7 @@ short AStar::GetDistance(Vec vecA, Vec vecB) {
     return abs(vecB.x - vecA.x) + abs(vecB.y - vecA.y);
 }
 
-Vec AStar::getNextTile(Vec start, Vec target) {
+Vec AStar::getNextTile(Vec start, Vec target, bool dontCheckTile) {
   Node bestN;
   bestN.hCost = 999;
   Node current = Node(start.x, start.y);
@@ -141,9 +141,11 @@ Vec AStar::getNextTile(Vec start, Vec target) {
       short checkY = current.y + y;
 
       if (checkX >= 0 && checkX < world_size && checkY >= 0 && checkY < world_size) {
-        if (world.world[checkX][checkY] == 2) {
-          neighbours[dirLen] = Node(checkX, checkY);
-          dirLen++;
+        if (dontCheckTile || world.world[checkX][checkY] == 2) {
+          if (world.world[checkX][checkY] < 3) {
+            neighbours[dirLen] = Node(checkX, checkY);
+            dirLen++; 
+          }
         }
       }
     }

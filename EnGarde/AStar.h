@@ -44,7 +44,7 @@ class List {
 
 class AStar {
   public:
-    Vec getNextTile(Vec start, Vec target);
+    Vec getNextTile(Vec start, Vec target, bool dontCheckTile);
     Vec findPath(Vec start, Vec target);
 
   private:

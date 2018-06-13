@@ -9,7 +9,9 @@ const int world_size = 20;
 enum Tile {
   wall = 1,
   surface = 2,
-  character = 3
+  character = 3,
+  wallWithCharacter = 4,
+  surfaceWithCharacter = 5
 };
 
 enum Direction {
