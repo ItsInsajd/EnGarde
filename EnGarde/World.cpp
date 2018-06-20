@@ -66,7 +66,7 @@ void World::setEnemyCounter() {
     }
   }
   this->floorCount = count;
-  this->maxEnemies = count / 25;
+  this->maxEnemies = floorCount/20;
 
   if (maxEnemies >= max_enemies) {
     maxEnemies = max_enemies-1;

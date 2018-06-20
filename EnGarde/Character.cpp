@@ -52,8 +52,21 @@ void Character::setPosition(byte x, byte y) {
 }
 
 void Character::draw(int x, int y) {
-  gb.display.setColor(GREEN);
-  gb.display.fillRect(x, y, sprite_size, sprite_size);
+    /*if (this->moveDir == _right) {
+    if(this->isAlive) {
+      gb.display.drawImage(x+offsetX, y-offsetY, enemySpriteRight);
+    } else {
+      enemyCorpse.setFrame(0);
+      gb.display.drawImage(x+corpseOffsetX, y-corpseOffsetY, rightCorpseSprite);
+    }
+  } else {    
+    if(this->isAlive) {
+      gb.display.drawImage(x+offsetX, y-offsetY, enemySpriteLeft);
+    } else {
+      enemyCorpse.setFrame(1);
+      gb.display.drawImage(x+corpseOffsetX, y-corpseOffsetY, enemySpriteLeft);
+    }
+  }*/
 }
 
 void Character::takeDamage(byte dmg) {
@@ -144,7 +157,8 @@ bool Player::doesCollideWithWall(byte x, byte y) {
 }
 
 Enemy::Enemy(byte _posX, byte _posY, byte _baseHp)
-  : Character(_posX, _posY, 2, _baseHp) { }
+  : Character(_posX, _posY, 2, _baseHp) { 
+  }
 
 void Enemy::draw(int x, int y) {
   if (this->moveDir == _right) {
@@ -170,6 +184,10 @@ void Enemy::takeAction(byte x, byte y) {
   }
   Vec dir = astar.getNextTile(Vec(posX, posY), Vec(player.posX, player.posY), false);
 
+  if (dir.x == 99 && dir.y == 99) {
+    return;
+  }
+  
   if (dir.x-posX != 0) {
     this->changeDirection(dir.x-posX);
   }
@@ -274,6 +292,10 @@ void Ghost::takeAction(byte x, byte y) {
     return;
   }
   Vec dir = astar.getNextTile(Vec(posX, posY), Vec(player.posX, player.posY), true);
+
+  if (dir.x == 99 && dir.y == 99) {
+    return;
+  }
 
   if (dir.x-posX != 0) {
     this->changeDirection(dir.x-posX);
