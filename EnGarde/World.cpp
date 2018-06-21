@@ -6,7 +6,13 @@ Image floorTile = Image(floorTileBuff);
 const uint8_t wallTileBuff[] = {8, 8, 2, 0, 0, 0xFF, 1, 0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0xff, 0xff,0xff, 0xff,0xff, 0xff,0xff, 0xff,0xff, 0xff,0xff, 0xff,0xff, 0xff,0xff, 0xff,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55,0x55, 0x55};
 Image wallTile = Image(wallTileBuff);
 
+void World::init() {
+  currentWorld = 1;
+  currentLevel = 0;
+}
+
 void World::create() {
+  this->updateProgress();
   this->initWorld();
   this->randomize();
   this->randomize();
@@ -66,7 +72,7 @@ void World::setEnemyCounter() {
     }
   }
   this->floorCount = count;
-  this->maxEnemies = floorCount/20;
+  this->maxEnemies = floorCount/25 + currentWorld * 2 + currentLevel;
 
   if (maxEnemies >= max_enemies) {
     maxEnemies = max_enemies-1;
@@ -97,6 +103,15 @@ void World::draw() {
 
   //gb.display.setColor(YELLOW);
   //gb.display.fillTriangle(camera.screenPosX(world.playerPos.x)+sprite_size/2, camera.screenPosY(0), camera.screenPosX(world.playerPos.x), camera.screenPosY(world.playerPos.y)+sprite_size/2, camera.screenPosX(world.playerPos.x)+sprite_size, camera.screenPosY(world.playerPos.y)+sprite_size/2);
+}
+
+void World::updateProgress() {
+  currentLevel++;
+
+  if (currentLevel > 4) {
+    currentLevel = 1;
+    currentWorld++;
+  }
 }
 
 World world;

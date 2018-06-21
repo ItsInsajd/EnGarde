@@ -69,8 +69,7 @@ class Ghost : public Enemy {
 
 class Rat : public Character {
   public:
-    Vec basePos;
-    Vec nextPos;
+    Vec currentDir;
     Rat(byte _posX, byte _posY, byte _baseHp);
     void takeAction(byte x, byte y);
     void draw(int x, int y);

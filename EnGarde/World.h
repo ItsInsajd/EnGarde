@@ -13,6 +13,7 @@ class World {
     Vec playerPos;
     int currentWorld;
     int currentLevel;
+    void init();
     void create();
     void draw();
     void start();
@@ -25,6 +26,7 @@ class World {
     Vec moveInDirection(Vec& cur);
     Vec getRandomDirection();
     void setEnemyCounter();
+    void updateProgress();
 };
 
 extern World world;

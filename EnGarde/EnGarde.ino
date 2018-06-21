@@ -35,11 +35,17 @@ void enemyMove();
 void advanceTurn(int x, int y);
 bool isFloorTaken(int x, int y);
 void endLevel();
+void loadLevel();
 
 void init() {
   camera.init();
-  world.create();
   player.init();
+  world.init();
+  loadLevel();
+}
+
+void loadLevel() {
+  world.create();
   player.setPosition(world.playerPos.x, world.playerPos.y);
   createEnemies();
   camera.setPosition(player.posX, player.posY);
@@ -184,9 +190,9 @@ void endLevel() {
   for (int i = 0; i < world.maxEnemies; ++i) {
     delete enemies[i];
   }
-  delete enemies;
+  delete [] enemies;
   TurnManager::resetCounter();
-  init();
+  loadLevel();
 }
 };
 
@@ -197,7 +203,7 @@ void setup() {
 
 void loop() {
   Game::init();
-  while (1) {
+  while(1) {
     while (!gb.update());
     gb.display.clear();
 

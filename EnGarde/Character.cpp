@@ -87,6 +87,8 @@ void Character::takeDamage(byte dmg) {
 }
 
 void Character::changeDirection(byte dir) {
+  if (dir == 0) return;
+  
   this->moveDir = dir;
 }
 
@@ -328,15 +330,13 @@ void Ghost::takeAction(byte x, byte y) {
 
 Rat::Rat(byte _posX, byte _posY, byte _baseHp)
   : Character(_posX, _posY, 2, _baseHp) {
-    basePos = Vec(_posX, _posY);
-    auto dir = getDirection();
-    nextPos = Vec(basePos.x+dir.x, basePos.y+dir.y);
+    currentDir = getDirection();
   }
 
 void Rat::draw(int x, int y) {
   if (this->moveDir == _right) {
     if(this->isAlive) {
-      gb.display.drawImage(x+1, y-2, ratRight);
+      gb.display.drawImage(x+2, y-2, ratRight);
     } else {
       ratCorpse.setFrame(0);
       gb.display.drawImage(x+2, y-2, ratCorpse);
@@ -355,24 +355,20 @@ void Rat::takeAction(byte x, byte y) {
   if(!isAlive) {
     return;
   }
-  Vec dir = posX == basePos.x && posY == basePos.y ? nextPos : basePos;
+  if ((currentDir.x == 99 && currentDir.y == 99) || doesCollideWithWall(currentDir.x, currentDir.y)) {
+    currentDir = getDirection();
+    this->changeDirection(currentDir.x);
+    return;
+  }
 
-  if (dir.x == 99 && dir.y == 99) {
-    return;
-  }
+  Vec nextPos = Vec(posX + currentDir.x, posY + currentDir.y);
   
-  if (dir.x-posX != 0) {
-    this->changeDirection(posX-dir.x);
-  }
-  
-  if (dir.x == player.posX && dir.y == player.posY) {
+  if (nextPos.x == player.posX && nextPos.y == player.posY) {
     player.takeDamage(1);
-  } else if (world.world[dir.x][dir.y] != 2) {
-    return;
   } else {
     world.world[posX][posY] = world.world[posX][posY] - 3;
-    posX = dir.x;
-    posY = dir.y;
+    posX = nextPos.x;
+    posY = nextPos.y;
     world.world[posX][posY] = world.world[posX][posY] + 3;
   }
 }
