@@ -61,8 +61,17 @@ class BloodSkull : public Skull {
 };
 
 class Ghost : public Enemy {
-    public:
+  public:
     Ghost(byte _posX, byte _posY, byte _baseHp);
+    void takeAction(byte x, byte y);
+    void draw(int x, int y);
+};
+
+class Rat : public Character {
+  public:
+    Vec basePos;
+    Vec nextPos;
+    Rat(byte _posX, byte _posY, byte _baseHp);
     void takeAction(byte x, byte y);
     void draw(int x, int y);
 };

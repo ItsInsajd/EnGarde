@@ -140,7 +140,7 @@ void createEnemies() {
   Utils::shuffleArray(floors, world.floorCount);
   byte floorCounter = 0;
   for (byte i = 0; i < world.maxEnemies; ++i) {
-    byte enemyType = random(0, 4);
+    byte enemyType = random(0, 5);
 
     if (floors[floorCounter].x == player.posX && floors[floorCounter].y == player.posY) {
       floorCounter++;
@@ -154,8 +154,10 @@ void createEnemies() {
         enemies[i] = new Enemy(pos.x, pos.y, 2);
       } else if (enemyType == 2) {
         enemies[i] = new BloodSkull(pos.x, pos.y, 1);
-      } else {
+      } else if (enemyType == 3) {
         enemies[i] = new Ghost(pos.x, pos.y, 1);
+      } else {
+        enemies[i] = new Rat(pos.x, pos.y, 2);
       }
     world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
     floorCounter++;
