@@ -5,6 +5,7 @@
 #include "Character.h"
 #include "World.h"
 #include "Utils.h"
+using namespace std;
 
 namespace TurnManager {
   int turnCounter = 0;
@@ -26,7 +27,7 @@ namespace Game {
 Character **enemies;
 Vec* floors;
 Vec exitPos;
-short n;
+short levelTextTimer;
 
 void drawWorld();
 void drawEnemies();
@@ -36,6 +37,8 @@ void advanceTurn(int x, int y);
 bool isFloorTaken(int x, int y);
 void endLevel();
 void loadLevel();
+void showLevelProgressText();
+void showGameOver();
 
 void init() {
   camera.init();
@@ -45,6 +48,7 @@ void init() {
 }
 
 void loadLevel() {
+  levelTextTimer = 50;
   world.create();
   player.setPosition(world.playerPos.x, world.playerPos.y);
   createEnemies();
@@ -54,6 +58,17 @@ void loadLevel() {
 void updatePlayer() {
   if (world.enemyCount == 0) {
     endLevel();
+  }
+
+  if (levelTextTimer > 0 && player.isAlive) {
+    showLevelProgressText();
+    return;
+  } else if (!player.isAlive) {
+    showGameOver();
+    if (gb.buttons.pressed(BUTTON_B)) {
+      init();
+    }
+    return;
   }
 
   world.draw();
@@ -193,6 +208,29 @@ void endLevel() {
   delete [] enemies;
   TurnManager::resetCounter();
   loadLevel();
+}
+
+void showLevelProgressText() {
+  levelTextTimer--;
+  gb.display.setColor(BLACK);
+  gb.display.fillRect(0, 0, 64, 80);
+  gb.display.setCursor(20, 28);
+  gb.display.setColor(WHITE);
+  String text1 = "LEVEL ";
+  String text2 = text1 + world.currentWorld;
+  String text3 = text2 + "_";
+  String text4 = text3 + world.currentLevel;
+  gb.display.print(text4);
+}
+
+void showGameOver() {
+  gb.display.setColor(BLACK);
+  gb.display.fillRect(0, 0, 64, 80);
+  gb.display.setCursor(20, 20);
+  gb.display.setColor(WHITE);
+  gb.display.print("GAME OVER");
+  gb.display.setCursor(5, 36);
+  gb.display.print("press A to restart");
 }
 };
 

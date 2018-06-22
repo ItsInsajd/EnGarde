@@ -37,6 +37,7 @@ class Player : public Character {
     void drawHealth();
     void draw(int x, int y);
     void takeAction(byte x, byte y);
+    void takeDamage(byte dmg);
     bool doesCollideWithWall(byte x, byte y);
 };
 

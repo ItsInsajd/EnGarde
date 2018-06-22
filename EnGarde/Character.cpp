@@ -145,6 +145,15 @@ void Player::takeAction(byte x, byte y) {
   posY += y;
 }
 
+void Player::takeDamage(byte dmg) {
+  if (currentHp - dmg) {
+    currentHp -= dmg;
+  } else {
+    currentHp = 0;
+    isAlive = false;
+  }
+}
+
 void Player::draw(int x, int y) {
   if (this->moveDir == _right) {
     gb.display.drawImage(x, y-4, playerSpriteRight);
@@ -170,8 +179,7 @@ bool Player::doesCollideWithWall(byte x, byte y) {
 }
 
 Enemy::Enemy(byte _posX, byte _posY, byte _baseHp)
-  : Character(_posX, _posY, 2, _baseHp) { 
-  }
+  : Character(_posX, _posY, 2, _baseHp) { }
 
 void Enemy::draw(int x, int y) {
   if (this->moveDir == _right) {
