@@ -5,7 +5,7 @@
 #include "Character.h"
 #include "World.h"
 #include "Utils.h"
-using namespace std;
+#include "EnemyManager.h"
 
 namespace TurnManager {
   int turnCounter = 0;
@@ -24,214 +24,153 @@ namespace TurnManager {
 };
 
 namespace Game {
-Character **enemies;
-Vec* floors;
-Vec exitPos;
-short levelTextTimer;
-
-void drawWorld();
-void drawEnemies();
-void createEnemies();
-void enemyMove();
-void advanceTurn(int x, int y);
-bool isFloorTaken(int x, int y);
-void endLevel();
-void loadLevel();
-void showLevelProgressText();
-void showGameOver();
-
-void init() {
-  camera.init();
-  player.init();
-  world.init();
-  loadLevel();
-}
-
-void loadLevel() {
-  levelTextTimer = 50;
-  world.create();
-  player.setPosition(world.playerPos.x, world.playerPos.y);
-  createEnemies();
-  camera.setPosition(player.posX, player.posY);
-}
-
-void updatePlayer() {
-  if (world.enemyCount == 0) {
-    endLevel();
+  Vec exitPos;
+  short levelTextTimer;
+  
+  void drawWorld();
+  void enemyMove();
+  void advanceTurn(int x, int y);
+  void endLevel();
+  void loadLevel();
+  void showLevelProgressText();
+  void showGameOver();
+  void cleanUp();
+  
+  void init() {
+    camera.init();
+    player.init();
+    world.init();
+    loadLevel();
+  }
+  
+  void loadLevel() {
+    levelTextTimer = 50;
+    world.create();
+    player.setPosition(world.playerPos.x, world.playerPos.y);
+    enemyManager.createEnemies();
+    camera.setPosition(player.posX, player.posY);
   }
 
-  if (levelTextTimer > 0 && player.isAlive) {
-    showLevelProgressText();
-    return;
-  } else if (!player.isAlive) {
-    showGameOver();
-    if (gb.buttons.pressed(BUTTON_B)) {
-      init();
+  void updatePlayer() {
+    if (world.enemyCount == 0) {
+      endLevel();
     }
-    return;
+  
+    if (levelTextTimer > 0 && player.isAlive) {
+      showLevelProgressText();
+      return;
+    } else if (!player.isAlive) {
+      showGameOver();
+      if (gb.buttons.pressed(BUTTON_A)) {
+        cleanUp();
+        init();
+      }
+      return;
+    }
+  
+    world.draw();
+    enemyManager.drawEnemies();
+    player.draw(camera.screenPosX(player.posX), camera.screenPosY(player.posY));
+    player.drawGui();
+  
+    gb.display.setCursor(0, 9);
+    gb.display.print(gb.getFreeRam());
+  
+    if (gb.buttons.repeat(BUTTON_UP, 5)) {
+      advanceTurn(0, -1);
+    }
+    if (gb.buttons.repeat(BUTTON_DOWN, 5)) {
+      advanceTurn(0, 1);
+    }
+    if (gb.buttons.repeat(BUTTON_RIGHT, 5)) {
+      player.changeDirection(_right);
+      advanceTurn(1, 0);
+    }
+    if (gb.buttons.repeat(BUTTON_LEFT, 5)) {
+      player.changeDirection(_left);
+      advanceTurn(-1, 0);
+    }
+    if (gb.buttons.pressed(BUTTON_B)) {
+      enemyMove();
+    }
+    camera.moveCamera(player.posX, player.posY);
   }
-
-  world.draw();
-  drawEnemies();
-  player.draw(camera.screenPosX(player.posX), camera.screenPosY(player.posY));
-  player.drawHealth();
-
-  gb.display.setCursor(0, 9);
-  gb.display.print(gb.getFreeRam());
-
-  if (gb.buttons.repeat(BUTTON_UP, 5)) {
-    advanceTurn(0, -1);
-  }
-  if (gb.buttons.repeat(BUTTON_DOWN, 5)) {
-    advanceTurn(0, 1);
-  }
-  if (gb.buttons.repeat(BUTTON_RIGHT, 5)) {
-    player.changeDirection(_right);
-    advanceTurn(1, 0);
-  }
-  if (gb.buttons.repeat(BUTTON_LEFT, 5)) {
-    player.changeDirection(_left);
-    advanceTurn(-1, 0);
-  }
-  if (gb.buttons.pressed(BUTTON_B)) {
+  
+  void advanceTurn(int x, int y) {
+    if (player.doesCollideWithWall(x, y)) {
+      return;
+    }
+  
+    int newX = player.posX + x;
+    int newY = player.posY + y;
+    bool canMove = true;
+    
+    for (int i = 0; i < world.maxEnemies; ++i) {
+      Character* ch = enemyManager.enemies[i];
+  
+      if (ch->posX == newX && ch->posY == newY) {
+        if (ch->isAlive) {
+          canMove = false;
+          ch->takeDamage(1);
+          player.attackAnimationTime = 3;
+          player.attackPos = Vec(camera.screenPosX(newX), camera.screenPosY(newY));
+          continue;
+        }
+        if (ch->hasLoot) ch->pickLoot();
+      }
+    }
+    if (canMove) {
+      player.takeAction(x, y);
+    }
+    
     enemyMove();
   }
-  camera.moveCamera(player.posX, player.posY);
-}
-
-void advanceTurn(int x, int y) {
-  if (player.doesCollideWithWall(x, y)) {
-    return;
-  }
-
-  int newX = player.posX + x;
-  int newY = player.posY + y;
-
-  if (world.world[newX][newY] == 3 || world.world[newX][newY] == 5) {
-    for (int i = 0; i < world.maxEnemies; ++i) {
-      Character* ch = enemies[i];
-
-      if (ch->posX == newX && ch->posY == newY) {
-        ch->takeDamage(1);
-      }
-    }
-  } else {
-    player.takeAction(x, y);
-  }
-
-  enemyMove();
-}
-
-void enemyMove() {
-  TurnManager::incrementTurn();
   
-  for (byte i = 0; i < world.maxEnemies; ++i) {
-    Character* ch = enemies[i];
-    int turnTimer = ch->getTurnCounter();
-
-    if (TurnManager::canMove(turnTimer) && ch->isAlive) {
-      ch->takeAction(0, 0);
-    }
-  }
-}
-
-void drawEnemies() {
-  for (byte i = 0; i < world.maxEnemies; ++i) {
-    Character* ch = enemies[i];
-    ch->draw(camera.screenPosX(ch->posX) - 2, camera.screenPosY(ch->posY));
-  }
-}
-
-void createEnemies() {
-  byte enemyCount = world.maxEnemies;
-  floors = new Vec[world.floorCount];
-  enemies = new Character*[world.maxEnemies];
-  short count = 0;
-  
-  for (byte i = 0; i < world_size+1; ++i) {
-    for (byte j = 0; j < world_size+1; ++j) {
-      if (world.world[i][j] == surface) {
-        floors[count].x = i;
-        floors[count].y = j;
-        count++;
-      }
-    }
-  }
-
-  Utils::shuffleArray(floors, world.floorCount);
-  byte floorCounter = 0;
-  for (byte i = 0; i < world.maxEnemies; ++i) {
-    byte enemyType = random(0, 5);
-
-    if (floors[floorCounter].x == player.posX && floors[floorCounter].y == player.posY) {
-      floorCounter++;
-    }
-
-    Vec pos = floors[floorCounter];
+  void enemyMove() {
+    TurnManager::incrementTurn();
     
-    if (enemyType == 0) {
-        enemies[i] = new Skull(pos.x, pos.y, 1);
-      } else if (enemyType == 1) {
-        enemies[i] = new Enemy(pos.x, pos.y, 2);
-      } else if (enemyType == 2) {
-        enemies[i] = new BloodSkull(pos.x, pos.y, 1);
-      } else if (enemyType == 3) {
-        enemies[i] = new Ghost(pos.x, pos.y, 1);
-      } else {
-        enemies[i] = new Rat(pos.x, pos.y, 2);
+    for (byte i = 0; i < world.maxEnemies; ++i) {
+      Character* ch = enemyManager.enemies[i];
+      int turnTimer = ch->getTurnCounter();
+  
+      if (TurnManager::canMove(turnTimer) && ch->isAlive) {
+        ch->takeAction(0, 0);
       }
-    world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
-    floorCounter++;
-  }
-
-  delete [] floors;
-}
-
-bool isFloorTaken(int x, int y) {
-  if (player.posX == x && player.posY == y) {
-    return true;
-  }
-
-  for (int i = 0; i < world.floorCount; ++i) {
-    if (enemies[i]->posX == x && enemies[i]->posY == y) {
-      return true;
     }
   }
-
-  return false;
-}
-
-void endLevel() {
-  for (int i = 0; i < world.maxEnemies; ++i) {
-    delete enemies[i];
+  
+  void endLevel() {
+    cleanUp();
+    loadLevel();
   }
-  delete [] enemies;
-  TurnManager::resetCounter();
-  loadLevel();
-}
-
-void showLevelProgressText() {
-  levelTextTimer--;
-  gb.display.setColor(BLACK);
-  gb.display.fillRect(0, 0, 64, 80);
-  gb.display.setCursor(20, 28);
-  gb.display.setColor(WHITE);
-  String text1 = "LEVEL ";
-  String text2 = text1 + world.currentWorld;
-  String text3 = text2 + "_";
-  String text4 = text3 + world.currentLevel;
-  gb.display.print(text4);
-}
-
-void showGameOver() {
-  gb.display.setColor(BLACK);
-  gb.display.fillRect(0, 0, 64, 80);
-  gb.display.setCursor(20, 20);
-  gb.display.setColor(WHITE);
-  gb.display.print("GAME OVER");
-  gb.display.setCursor(5, 36);
-  gb.display.print("press A to restart");
-}
+  
+  void cleanUp() {
+    enemyManager.cleanUpEnemies();
+    TurnManager::resetCounter();
+  }
+  
+  void showLevelProgressText() {
+    levelTextTimer--;
+    gb.display.setColor(BLACK);
+    gb.display.fillRect(0, 0, 64, 80);
+    gb.display.setCursor(20, 28);
+    gb.display.setColor(WHITE);
+    String text1 = "LEVEL ";
+    String text2 = text1 + world.currentWorld;
+    String text3 = text2 + "_";
+    String text4 = text3 + world.currentLevel;
+    gb.display.print(text4);
+  }
+  
+  void showGameOver() {
+    gb.display.setColor(BLACK);
+    gb.display.fillRect(0, 0, 64, 80);
+    gb.display.setCursor(20, 20);
+    gb.display.setColor(WHITE);
+    gb.display.print("GAME OVER");
+    gb.display.setCursor(5, 36);
+    gb.display.print("press A to restart");
+  }
 };
 
 void setup() {

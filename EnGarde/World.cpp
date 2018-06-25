@@ -16,7 +16,7 @@ void World::create() {
   this->initWorld();
   this->randomize();
   this->randomize();
-  this->randomize();
+  chestPos = this->randomize();
   playerPos = this->randomize();
   this->setEnemyCounter();
 }
@@ -72,13 +72,13 @@ void World::setEnemyCounter() {
     }
   }
   this->floorCount = count;
-  this->maxEnemies = floorCount/25 + currentWorld * 2 + currentLevel;
+  this->maxEnemies = floorCount/25 + currentWorld * 2 + currentLevel +1;
 
   if (maxEnemies >= max_enemies) {
     maxEnemies = max_enemies-1;
   }
   
-  this->enemyCount = this->maxEnemies;
+  this->enemyCount = this->maxEnemies - 1;
 }
 
 void World::draw() {

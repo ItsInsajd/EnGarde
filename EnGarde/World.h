@@ -11,6 +11,7 @@ class World {
     byte maxEnemies;
     byte enemyCount;
     Vec playerPos;
+    Vec chestPos;
     int currentWorld;
     int currentLevel;
     void init();

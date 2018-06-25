@@ -159,21 +159,20 @@ Vec AStar::getNextTile(Vec start, Vec target, bool dontCheckTile) {
 Vec AStar::findPath(Vec start, Vec target) {
   List openSet = List();
   List closedSet = List();
-  //List path = List();
   auto startNode = Node(start.x, start.y);
   Node current;
   openSet.push(startNode);
   short z = 0;
   
   while(openSet.count > 0) {
+    z++;
     current = openSet.pop();
     closedSet.push(current);
     
     if (current.x == target.x && current.y == target.y) {
       break;
     }
-    gb.display.setCursor(gb.display.width()-20, 18);
-    gb.display.print(current.x);
+    
     Node neighbours[4];
     byte dirLen = 0;
     
@@ -187,12 +186,16 @@ Vec AStar::findPath(Vec start, Vec target) {
         short checkY = current.y + y;
 
         if (checkX >= 0 && checkX < world_size && checkY >= 0 && checkY < world_size) {
-          if (world.world[checkX][checkY] != 1) {
+          if (world.world[checkX][checkY] == 2) {
             neighbours[dirLen] = Node(checkX, checkY);
             dirLen++;
           }
         }
       }
+    }
+
+    if (dirLen == 0) {
+      return Vec(99, 99);
     }
     
     for (byte i = 0; i < dirLen; ++i) {
@@ -217,12 +220,12 @@ Vec AStar::findPath(Vec start, Vec target) {
         } 
       }
     }
-    if (z > 200) {
-      break;
+    if (z > 50) {
+      return Vec(99, 99);
     }
   }  
 
-  auto node = closedSet.pop();
+  //auto node = closedSet.pop();
   
   return Vec(current.parentX, current.parentY);
 }

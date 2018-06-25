@@ -7,7 +7,7 @@ Item::Item(byte x, byte y) {
 
 void Item::use() { }
 
-void Item::draw() { }
+void Item::draw(byte x, byte y) { }
 
 Coin::Coin(byte x, byte y) : Item(x, y) { }
 

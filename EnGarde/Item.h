@@ -14,7 +14,7 @@ class Item {
     virtual void draw(byte x, byte y);
 };
 
-class Coin {
+class Coin : Item {
   public:
     Coin(byte x, byte y);
     void use();

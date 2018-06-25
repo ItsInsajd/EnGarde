@@ -19,4 +19,3 @@ void Utils::shuffleArray(Vec arr[], short len) {
     arr[i] = temp;
   }
 }
-
