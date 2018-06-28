@@ -33,7 +33,7 @@ void EnemyManager::createEnemies() {
   for (byte i = 0; i < enemyCount; ++i) {
     byte enemyType = random(0, 5);
 
-    if (floors[floorCounter].x == player.posX && floors[floorCounter].y == player.posY) {
+    if ((floors[floorCounter].x == player.posX && floors[floorCounter].y == player.posY) || (floors[floorCounter].x == world.chestPos.x && floors[floorCounter].y == world.chestPos.y)) {
       floorCounter++;
     }
 
@@ -41,20 +41,18 @@ void EnemyManager::createEnemies() {
     
     if (enemyType == 0) {
         enemies[i] = new Skull(pos.x, pos.y, 1);
-      } else if (enemyType == 1) {
-        enemies[i] = new Enemy(pos.x, pos.y, 2);
-      } else if (enemyType == 2) {
-        enemies[i] = new BloodSkull(pos.x, pos.y, 1);
-      } else if (enemyType == 3) {
-        enemies[i] = new Ghost(pos.x, pos.y, 1);
-      } else {
-        enemies[i] = new Rat(pos.x, pos.y, 2);
-      }
+    } else if (enemyType == 1) {
+      enemies[i] = new Enemy(pos.x, pos.y, 2);
+    } else if (enemyType == 2) {
+      enemies[i] = new BloodSkull(pos.x, pos.y, 1);
+    } else if (enemyType == 3) {
+      enemies[i] = new Ghost(pos.x, pos.y, 1);
+    } else {
+      enemies[i] = new Rat(pos.x, pos.y, 2);
+    }
     world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
     floorCounter++;
   }
-
-  
 
   enemies[world.maxEnemies-1] = new Chest(world.chestPos.x, world.chestPos.y);
   world.world[world.chestPos.x][world.chestPos.y] = world.world[world.chestPos.x][world.chestPos.y] + 3;

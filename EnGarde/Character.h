@@ -18,18 +18,18 @@ class Character {
     void setPosition(byte x, byte y);
     void changeDirection(byte dir);
     byte getTurnCounter();
-    void pickLoot();
     void drawLoot(byte x, byte y);
     virtual void takeDamage(byte dmg);
     virtual void draw(int x, int y);
     virtual bool doesCollideWithWall(byte x, byte y);
     virtual void takeAction(byte x, byte y);
+    virtual void pickLoot();
 
   protected:
     const Vec directions[4] = { Vec(0, -1), Vec(1, 0), Vec(0, 1), Vec(-1, 0) };
     int moveCounter;
     byte moveDir;
-
+    
     Vec getDirection();
 };
 
@@ -56,6 +56,7 @@ class Chest : public Character {
     Chest(byte _posX, byte _posY);
     void draw(int x, int y);
     void takeDamage(byte dmg);
+    void pickLoot();
 };
 
 class Enemy : public Character {
