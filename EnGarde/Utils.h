@@ -9,11 +9,21 @@ struct Vec {
 
     Vec();
     Vec(short _x, short _y);
+    bool operator==(const Vec& b);
+    bool operator!=(const Vec& b);
 };
 
 namespace Utils {
   short nextValue(short value, short maxValue);
-  void shuffleArray(Vec arr[], short len);
-}
+  template <typename T>
+  void shuffleArray(T* arr, size_t size) {
+    for (short i = 0; i < size; ++i) {
+      short rng = random(0, size);
+      T temp = arr[rng];
+      arr[rng] = arr[i];
+      arr[i] = temp;
+    }
+  }
+};
 
 #endif

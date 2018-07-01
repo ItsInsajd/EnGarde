@@ -21,9 +21,23 @@ void World::create() {
   this->updateProgress();
   this->initWorld();
   this->randomize();
-  this->randomize();
+  arcadePos = this->randomizeNoBacktrack();
   chestPos = this->randomize();
   playerPos = this->randomize();
+
+  if (playerPos.x == arcadePos.x && playerPos.y == arcadePos.y) {
+    arcadePos.x = 99;
+    arcadePos.y = 99;
+  } else {
+    world[arcadePos.x][arcadePos.y] = surfaceWithCharacter;
+    for (short i = -1; i <= 1; ++i) {
+      for (short j = -1; j <= 1; ++j) {
+        if (i == 0 && j == 0) continue;
+        if (isInBounds(arcadePos.x+i, arcadePos.y+j)) world[arcadePos.x+i][arcadePos.y+j] = surface;
+      }
+    }
+  }
+  
   this->setEnemyCounter();
 }
 
@@ -32,6 +46,18 @@ Vec World::randomize() {
   
   for (byte i = 0; i < 150; ++i) {
      currentPos = this->moveInDirection(currentPos);
+  }
+
+  return currentPos;
+}
+
+Vec World::randomizeNoBacktrack() {
+  Vec lastPos = Vec((world_size / 2)-1, (world_size / 2)-1);
+  Vec currentPos = this->moveInDirection(lastPos);
+
+  for (byte i = 0; i < 50; ++i) {
+    lastPos = currentPos;
+    currentPos = this->moveInDirectionNoBacktrack(currentPos, lastPos);
   }
 
   return currentPos;
@@ -51,6 +77,21 @@ Vec World::moveInDirection(Vec& cur) {
   Tile t = surface;
   
   if (cur.x+dir.x > 0 && cur.y+dir.y > 0 && cur.x+dir.x < world_size-1 && cur.y+dir.y < world_size-1) {
+    cur.x += dir.x;
+    cur.y += dir.y;
+
+    this->world[cur.x][cur.y] = t;
+  }
+
+  return cur;
+}
+
+Vec World::moveInDirectionNoBacktrack(Vec& cur, Vec& last) {
+  Vec dir = this->getRandomDirection();
+  Vec next = Vec(cur.x+dir.x, cur.y+dir.y);
+  Tile t = surface;
+  
+  if (next != last && cur.x+dir.x > 0 && cur.y+dir.y > 0 && cur.x+dir.x < world_size-1 && cur.y+dir.y < world_size-1) {
     cur.x += dir.x;
     cur.y += dir.y;
 
@@ -97,8 +138,8 @@ void World::draw() {
       if (tile == 2 || tile == 5) {
         gb.display.drawImage(camera.screenPosX(i), camera.screenPosY(j), floorTile);
       } else if (tile == 1 || tile == 4) {
-        if (world[i][j+1] != 1 && world[i][j+1] != 4) {
-          if (i > 0 && j > 0 && i < world_size && j < world_size && world[i+1][j] != 1 && world[i+1][j] != 4 && world[i-1][j] != 1 && world[i-1][j] != 4 && world[i][j-1] != 1 && world[i][j-1] != 4) {
+        if (j+1 <= world_size && world[i][j+1] != 1 && world[i][j+1] != 4) {
+          if (i-1 > 0 && i+1 < world_size && j-1 > 0 && world[i+1][j] != 1 && world[i+1][j] != 4 && world[i-1][j] != 1 && world[i-1][j] != 4 && world[i][j-1] != 1 && world[i][j-1] != 4) {
             gb.display.drawImage(camera.screenPosX(i), camera.screenPosY(j), floorTile);
             gb.display.drawImage(camera.screenPosX(i), camera.screenPosY(j)-2, grave);
           } else {
@@ -126,6 +167,14 @@ void World::updateProgress() {
     currentLevel = 1;
     currentWorld++;
   }
+}
+
+bool World::isWall(byte x, byte y) {
+  return this->world[x][y] == 1 || this->world[x][y] == 4;
+}
+
+bool World::isInBounds(short x, short y) {
+  return x > 0 && x < world_size && y > 0 && y < world_size;
 }
 
 World world;

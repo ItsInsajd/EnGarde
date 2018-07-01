@@ -138,7 +138,7 @@ Vec AStar::getNextTile(Vec start, Vec target, bool dontCheckTile) {
       short checkX = current.x + x;
       short checkY = current.y + y;
 
-      if (checkX >= 0 && checkX < world_size && checkY >= 0 && checkY < world_size) {
+      if (checkX > 0 && checkX < world_size && checkY > 0 && checkY < world_size) {
         if (dontCheckTile || world.world[checkX][checkY] == 2) {
           if (world.world[checkX][checkY] < 3) {
             auto currentHCost = this->GetDistance(Vec(checkX, checkY), target);

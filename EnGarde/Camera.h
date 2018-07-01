@@ -7,10 +7,12 @@ class Camera {
     int camHeight;
     int posX;
     int posY;
+    short shake;
 
     void init();
     void setPosition(int _posX, int _posY);
     void moveCamera(int x, int y);
+    void shakeScreen(byte value);
     int screenPosX(int v);
     int screenPosY(int v);
     bool isInBounds(byte x, byte y);

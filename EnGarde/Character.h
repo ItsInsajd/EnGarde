@@ -1,6 +1,7 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 #include "Utils.h"
+#include "Constants.h"
 
 class Character {
   public:
@@ -16,7 +17,7 @@ class Character {
     Character();
     Character(byte _posX, byte _posY, byte _moveDelay, byte _baseHp);
     void setPosition(byte x, byte y);
-    void changeDirection(byte dir);
+    void changeDirection(short dir);
     byte getTurnCounter();
     void drawLoot(byte x, byte y);
     virtual void takeDamage(byte dmg);
@@ -28,9 +29,10 @@ class Character {
   protected:
     const Vec directions[4] = { Vec(0, -1), Vec(1, 0), Vec(0, 1), Vec(-1, 0) };
     int moveCounter;
-    byte moveDir;
+    short moveDir;
     
     Vec getDirection();
+    byte subtractHp(byte value);
 };
 
 class Player : public Character {

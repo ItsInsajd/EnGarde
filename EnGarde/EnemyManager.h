@@ -4,13 +4,16 @@
 
 class EnemyManager {
   public:
-    Character **enemies;
+    byte enemyCount;
+    Character *enemies[max_enemies];
     Vec* floors;
   
+    EnemyManager();
     void createEnemies();
-    bool isFloorTaken(int x, int y);
+    bool isFloorTaken(byte x, byte y);
     void drawEnemies();
     void cleanUpEnemies();
+    void spawnGraveyardEnemies(Vec pos, byte i);
 };
 
 extern EnemyManager enemyManager;

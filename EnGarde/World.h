@@ -9,16 +9,18 @@ class World {
     byte world[world_size+1][world_size+1]; //take note if worlds are smaller with byte
     int floorCount;
     byte maxEnemies;
-    byte enemyCount;
+    short enemyCount;
     Vec playerPos;
     Vec chestPos;
+    Vec arcadePos;
     int currentWorld;
     int currentLevel;
     void init();
     void create();
     void draw();
     void start();
-    
+    bool isWall(byte x, byte y);
+    bool isInBounds(short x, short y);
   private:
     const Vec directions[4] = { Vec(0, -1), Vec(1, 0), Vec(0, 1), Vec(-1, 0) };
     
@@ -26,6 +28,8 @@ class World {
     Vec randomize();
     Vec moveInDirection(Vec& cur);
     Vec getRandomDirection();
+    Vec randomizeNoBacktrack();
+    Vec moveInDirectionNoBacktrack(Vec& cur, Vec& last);
     void setEnemyCounter();
     void updateProgress();
 };

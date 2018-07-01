@@ -7,15 +7,18 @@ Vec::Vec(short _x, short _y) {
   y = _y;
 }
 
-short Utils::nextValue(short value, short maxValue) {
-  return value+1 <= maxValue ? value+1 : 0;
+bool Vec::operator==(const Vec& b) {
+  Vec vec; 
+
+  return vec.x == b.x && vec.y == b.y;
 }
 
-void Utils::shuffleArray(Vec arr[], short len) {
-  for (short i = 0; i < len; ++i) {
-    short rng = random(0, len);
-    Vec temp = arr[rng];
-    arr[rng] = arr[i];
-    arr[i] = temp;
-  }
+bool Vec::operator!=(const Vec& b) {
+  Vec vec; 
+
+  return !(vec.x != b.x && vec.y != b.y);
+}
+
+short Utils::nextValue(short value, short maxValue) {
+  return value+1 <= maxValue ? value+1 : 0;
 }

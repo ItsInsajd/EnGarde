@@ -4,6 +4,7 @@
 #include "World.h"
 #include "AStar.h"
 #include "Camera.h"
+#include "SoundManager.h"
 
 const uint8_t coinGuiBuff[] = {8, 8, 1, 0, 0, 0x02, 1, 0x22, 0x22,0x22, 0x22,0x22, 0x2a,0x92, 0x22,0x22, 0xaa,0xa9, 0x22,0x22, 0xaa,0xa9, 0x22,0x22, 0xaa,0xa9, 0x22,0x22, 0x2a,0x92, 0x22,0x22, 0x22,0x22, 0x22,0x22, 0x22,0x22, 0x22};
 Image coinGui = Image(coinGuiBuff);
@@ -105,18 +106,26 @@ void Character::draw(int x, int y) {
 }
 
 void Character::takeDamage(byte dmg) {
-  if (currentHp - dmg) {
-    currentHp -= dmg;
+  if(random(0, 1)) soundManager.playFX(ENEMY_HIT);
+  else soundManager.playFX(ENEMY_HIT2);
+  camera.shakeScreen(4);
+
+  if (subtractHp(dmg)) {
+    currentHp = subtractHp(dmg);
   } else {
     currentHp = 0;
     isAlive = false;
     hasLoot = true;
     world.enemyCount--;
     world.world[posX][posY] = world.world[posX][posY] - 3;
+
+    if (world.enemyCount == 0) {
+      soundManager.playFX(PORTAL_OPENED);
+    }
   }
 }
 
-void Character::changeDirection(byte dir) {
+void Character::changeDirection(short dir) {
   if (dir == 0) return;
   
   this->moveDir = dir;
@@ -129,6 +138,7 @@ byte Character::getTurnCounter() {
 void Character::pickLoot() {
   hasLoot = false;
   player.gold += this->gold;
+  soundManager.playFX(COIN);
 }
 
 void Character::drawLoot(byte x, byte y) {
@@ -168,6 +178,10 @@ Vec Character::getDirection() {
   return possibleDirs[rnd];
 }
 
+byte Character::subtractHp(byte value) {
+  return byte(currentHp - value) < currentHp ? byte(currentHp - value) : 0;
+}
+
 Player::Player() { }
 
 Player::Player(byte _posX, byte _posY)
@@ -188,8 +202,11 @@ void Player::takeAction(byte x, byte y) {
 }
 
 void Player::takeDamage(byte dmg) {
-  if (currentHp - dmg) {
-    currentHp -= dmg;
+  soundManager.playFX(PLAYER_HIT);
+  camera.shakeScreen(4);
+
+  if (subtractHp(dmg)) {
+    currentHp = subtractHp(dmg);
     hitAnimationTime = 6;
   } else {
     currentHp = 0;
@@ -284,8 +301,10 @@ void Chest::pickLoot() {
   hasLoot = false;
   if (content == 1 && player.currentHp < player.baseHp) {
     player.currentHp++;
+    soundManager.playFX(HEART);
   } else {
-    player.gold += this->gold;    
+    player.gold += this->gold;
+    soundManager.playFX(COIN);
   }
 }
 
@@ -545,7 +564,7 @@ void Necromancer::takeAction(byte x, byte y) {
   if (charge) {
     for (short i = posX + moveDir; ;i+=moveDir) {
       if (i < 0 || i >= world_size) break;
-      if (world.world[i][posY] == 1 || world.world[i][posY] == 4) break;
+      if (world.isWall(i, posY)) break;
       if (i == player.posX && posY == player.posY) {
          player.takeDamage(2);
          break;
