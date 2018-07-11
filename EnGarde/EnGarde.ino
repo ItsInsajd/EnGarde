@@ -109,14 +109,14 @@ namespace Game {
       return;
     }
 
-    gb.display.setCursor(0, 9);
+    /*gb.display.setCursor(0, 9);
     gb.display.print(gb.getFreeRam());
     gb.display.setCursor(0, 18);
     gb.display.print(enemyManager.enemyCount);
     gb.display.setCursor(0, 27);
     gb.display.print(world.enemyCount);
     gb.display.setCursor(0, 35);
-    gb.display.print(chName);
+    gb.display.print(chName);*/
 
     if (TurnManager::turnCounter > 0) {
       if (TurnManager::updateTurnTime()) {
