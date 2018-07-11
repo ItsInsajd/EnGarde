@@ -129,12 +129,9 @@ void World::setEnemyCounter() {
 }
 
 void World::draw() {
-  for (byte i = 0; i <= world_size; ++i) {
-    for (byte j = 0; j <= world_size; ++j) {
+  for (short i = 0; i <= world_size; ++i) {
+    for (short j = 0; j <= world_size; ++j) {
       int tile = world[i][j];
-      if (!camera.isInBounds(i, j)) {
-        //continue;
-      }
       if (tile == 2 || tile == 5) {
         gb.display.drawImage(camera.screenPosX(i), camera.screenPosY(j), floorTile);
       } else if (tile == 1 || tile == 4) {

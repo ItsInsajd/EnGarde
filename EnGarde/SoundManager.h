@@ -9,6 +9,9 @@
 #define PORTAL_OPENED 4
 #define HEART 5
 #define ARCADE_OFF 6
+#define SKILL_UP 7
+#define REROLL 8
+#define LACK_OF_GOLD 9
 
 class SoundManager {
   public:
@@ -16,7 +19,7 @@ class SoundManager {
     
     void playFX(byte trackNumber);
   private:
-    char* tracks[7] = { "coin.wav", "enemyHit.wav", "enemyHit2.wav", "playerHit.wav", "portalOpened.wav", "heart.wav", "arcadeOff.wav" };
+    char* tracks[10] = { "coin.wav", "enemyHit.wav", "enemyHit2.wav", "playerHit.wav", "portalOpened.wav", "heart.wav", "arcadeOff.wav", "skillUp.wav", "reroll.wav", "lackOfGold.wav" };
 };
 
 extern SoundManager soundManager;

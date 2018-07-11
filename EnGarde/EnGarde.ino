@@ -22,6 +22,7 @@ namespace TurnManager {
   }
 
   void drawTime() {
+    gb.display.setColor(WHITE);
     for (byte i = 0; i < turnTime / 5; ++i) {
       gb.display.fillRect(77, 1+i*2, 2, 2);
     }
@@ -48,22 +49,25 @@ namespace TurnManager {
 };
 
 namespace Game {
+  String chName = "";
+
   void enemyMove();
   void advanceTurn(int x, int y);
   void endLevel();
   void loadLevel();
   void cleanUp();
   void backToMainMenu();
+  void killOffScreen(Character& ch);
 
   void init() {
     camera.init();
     player.init();
     world.init();
+    ui.initArcade();
     loadLevel();
   }
   
   void loadLevel() {
-    //gb.sound.play("mario1.wav", true);
     ui.levelTextTimer = 50;
     ui.shuffleSkills();
     world.create();
@@ -74,18 +78,15 @@ namespace Game {
 
   void updatePlayer() {
     if (player.posX == world.playerPos.x && player.posY == world.playerPos.y && world.enemyCount <= 0) {
-      endLevel();
+      if (ui.tutorial) {
+        backToMainMenu();
+        return;
+      } else {
+        endLevel();
+      }
     }
-  
     if (ui.levelTextTimer > 0 && player.isAlive) {
       ui.showLevelProgressText();
-      return;
-    } else if (!player.isAlive) {
-      ui.showGameOver();
-      if (gb.buttons.pressed(BUTTON_A)) {
-        cleanUp();
-        init();
-      }
       return;
     }
   
@@ -94,7 +95,15 @@ namespace Game {
     ui.drawArcade(camera.screenPosX(world.arcadePos.x), camera.screenPosY(world.arcadePos.y)-2);
     player.draw(camera.screenPosX(player.posX), camera.screenPosY(player.posY));
     player.drawGui();
-  
+
+    if (!player.isAlive) {
+      ui.showGameOver();
+      if (gb.buttons.pressed(BUTTON_A)) {
+        cleanUp();
+        init();
+      }
+      return;
+    }
     if (ui.arcadeOpened) {
       ui.showArcade();
       return;
@@ -106,9 +115,12 @@ namespace Game {
     gb.display.print(enemyManager.enemyCount);
     gb.display.setCursor(0, 27);
     gb.display.print(world.enemyCount);
+    gb.display.setCursor(0, 35);
+    gb.display.print(chName);
 
     if (TurnManager::turnCounter > 0) {
       if (TurnManager::updateTurnTime()) {
+        player.resetCombo();
         enemyMove();
       }
     }
@@ -151,19 +163,19 @@ namespace Game {
     }
 
     TurnManager::resetTurnTime();
-    int newX = player.posX + x;
-    int newY = player.posY + y;
+    Vec newPos = Vec(player.posX + x, player.posY + y);
+    Vec longArmsPos = Vec(player.posX + x*2, player.posY + y*2);
     bool canMove = true;
     
     for (int i = 0; i < world.maxEnemies; ++i) {
       Character* ch = enemyManager.enemies[i];
   
-      if (ch->posX == newX && ch->posY == newY) {
+      if (ch->posX == newPos.x && ch->posY == newPos.y || (player.longArms && ch->posX == longArmsPos.x && ch->posY == longArmsPos.y)) {
         if (ch->isAlive) {
           canMove = false;
-          ch->takeDamage(1);
+          ch->takeDamage(player.calculateDmg());
           player.attackAnimationTime = 3;
-          player.attackPos = Vec(camera.screenPosX(newX), camera.screenPosY(newY));
+          player.attackPos = Vec(camera.screenPosX(newPos.x), camera.screenPosY(newPos.y));
           continue;
         }
         if (ch->hasLoot) ch->pickLoot();
@@ -178,11 +190,13 @@ namespace Game {
   
   void enemyMove() {
     TurnManager::incrementTurn();
-    
+    player.changeComboColor();
+
     for (byte i = 0; i < world.maxEnemies; ++i) {
       Character* ch = enemyManager.enemies[i];
       int turnTimer = ch->getTurnCounter();
-  
+      killOffScreen((*ch));
+
       if (TurnManager::canMove(turnTimer) && ch->isAlive) {
         ch->takeAction(0, 0);
       }
@@ -201,8 +215,18 @@ namespace Game {
 
   void backToMainMenu() {
     cleanUp();
+    ui.tutorial = false;
+    ui.tutorialTimer = 50;
+    ui.tutorialCount = 0;
     ui.mainMenuAnim = 48;
     ui.mainMenuMode = true;
+  }
+
+  void killOffScreen(Character& ch) {
+    if (!world.isInBounds(ch.posX, ch.posY)) {
+      //chName = ch.name;
+      ch.setPosition(world.chestPos.x, world.chestPos.y);
+    }
   }
 };
 
@@ -218,6 +242,16 @@ void loop() {
 
     if (ui.mainMenuMode) {
       ui.showMainMenu();
+    } else if (ui.tutorial) {
+      Game::init();
+      while(1) {
+        while (!gb.update());
+        gb.display.clear();
+
+        Game::updatePlayer();
+        ui.showTutorial();
+        if (ui.mainMenuMode) break;
+      }
     } else {
       Game::init();
       while(1) {

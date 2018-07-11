@@ -20,7 +20,6 @@ void EnemyManager::createEnemies() {
   }
 
   floors = new Vec[world.floorCount];
-  //enemies = new Character*[world.maxEnemies];
   short count = 0;
   
   for (byte i = 0; i < world_size+1; ++i) {
@@ -103,7 +102,6 @@ void EnemyManager::cleanUpEnemies() {
   for (int i = 0; i < world.maxEnemies; ++i) {
     delete enemies[i];
   }
-  //delete [] enemies;
 }
 
 EnemyManager enemyManager;

@@ -13,7 +13,8 @@ class Character {
     byte currentHp;
     bool hasLoot;
     byte gold;
-    
+    byte dmg;
+
     Character();
     Character(byte _posX, byte _posY, byte _moveDelay, byte _baseHp);
     void setPosition(byte x, byte y);
@@ -40,7 +41,15 @@ class Player : public Character {
     short gold;
     byte attackAnimationTime;
     byte hitAnimationTime;
+    byte combo = 0;
+    short comboCounter = 0;
+    byte comboColor = 0;
     Vec attackPos;
+    bool bloodlust;
+    bool stress;
+    bool godsGrace;
+    bool comboGod;
+    bool longArms;
     
     Player();
     Player(byte _posX, byte _posY);
@@ -50,6 +59,10 @@ class Player : public Character {
     void takeAction(byte x, byte y);
     void takeDamage(byte dmg);
     bool doesCollideWithWall(byte x, byte y);
+    byte calculateDmg();
+    void increaseCombo();
+    void resetCombo();
+    void changeComboColor();
 };
 
 class Chest : public Character {

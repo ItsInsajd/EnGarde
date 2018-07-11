@@ -66,6 +66,8 @@ const uint8_t necromancerChargeRightData[] = {8, 10, 3, 0, 2, 0x0E, 1, 0xee, 0xe
 Image necromancerChargeRight = Image(necromancerChargeRightData);
 const uint8_t necromancerChargeLeftData[] = {8, 10, 3, 0, 2, 0x0E, 1, 0xe9, 0xee,0xee, 0xee,0x98, 0x9e,0x00, 0x0e,0xe9, 0xee,0x70, 0xee,0xe9, 0xe0,0x00, 0x0e,0xe5, 0x0e,0x00, 0xee,0xe9, 0xe0,0x00, 0xee,0xe9, 0xee,0x00, 0xee,0xee, 0xe0,0x00, 0x0e,0xee, 0xe0,0x00, 0x0e,0xee, 0x00,0x00, 0x00,0xe8, 0xee,0xee, 0xee,0x88, 0x8e,0x00, 0x0e,0xe8, 0xee,0x70, 0xee,0xe9, 0xe0,0x00, 0x0e,0xe5, 0x0e,0x00, 0xee,0xe9, 0xe0,0x00, 0xee,0xe9, 0xee,0x00, 0xee,0xee, 0xe0,0x00, 0x0e,0xee, 0xe0,0x00, 0x0e,0xee, 0x00,0x00, 0x00,0x89, 0x8e,0xee, 0xee,0x98, 0x9e,0x00, 0x0e,0x89, 0x8e,0x70, 0xee,0xe9, 0xe0,0x00, 0x0e,0xe5, 0x0e,0x00, 0xee,0xe9, 0xe0,0x00, 0xee,0xe9, 0xee,0x00, 0xee,0xee, 0xe0,0x00, 0x0e,0xee, 0xe0,0x00, 0x0e,0xee, 0x00,0x00, 0x00};
 Image necromancerChargeLeft = Image(necromancerChargeLeftData);
+const uint8_t playerCorpseData[] = {8, 8, 2, 0, 0, 0x0E, 1, 0xee, 0xee,0xee, 0xee,0xee, 0xee,0xee, 0xee,0xee, 0xee,0xee, 0xee,0xee, 0x77,0x77, 0xee,0xee, 0x77,0x77, 0xee,0xee, 0x70,0x70, 0xee,0xec, 0xd7,0x7c, 0xee,0xc0, 0xdd,0xc1, 0xce,0xee, 0xee,0xee, 0xee,0xee, 0xee,0xee, 0xee,0xee, 0xee,0xee, 0xee,0xee, 0x77,0x77, 0xee,0xee, 0x77,0x77, 0xee,0xee, 0x07,0x07, 0xee,0xee, 0xc7,0x7d, 0xce,0xec, 0x1c,0xdd, 0x0c};
+Image playerCorpse = Image(playerCorpseData);
 
 Character::Character() {}
 
@@ -106,7 +108,7 @@ void Character::draw(int x, int y) {
 }
 
 void Character::takeDamage(byte dmg) {
-  if(random(0, 1)) soundManager.playFX(ENEMY_HIT);
+  if(random(0, 2)) soundManager.playFX(ENEMY_HIT);
   else soundManager.playFX(ENEMY_HIT2);
   camera.shakeScreen(4);
 
@@ -118,6 +120,12 @@ void Character::takeDamage(byte dmg) {
     hasLoot = true;
     world.enemyCount--;
     world.world[posX][posY] = world.world[posX][posY] - 3;
+    player.increaseCombo();
+
+    if (player.bloodlust && player.currentHp < player.baseHp && random(0, 12) == 0) {
+      player.currentHp++;
+      soundManager.playFX(HEART);
+    }
 
     if (world.enemyCount == 0) {
       soundManager.playFX(PORTAL_OPENED);
@@ -137,7 +145,7 @@ byte Character::getTurnCounter() {
 
 void Character::pickLoot() {
   hasLoot = false;
-  player.gold += this->gold;
+  player.gold += (this->gold * player.combo);
   soundManager.playFX(COIN);
 }
 
@@ -194,6 +202,13 @@ void Player::init() {
   this->baseHp = 4;
   this->currentHp = 4;
   this->gold = 0;
+  this->dmg = 1;
+  this->bloodlust = false;
+  this->stress = false;
+  this->godsGrace = false;
+  this->comboGod = false;
+  this->longArms = false;
+  this->resetCombo();
 }
 
 void Player::takeAction(byte x, byte y) {
@@ -208,26 +223,47 @@ void Player::takeDamage(byte dmg) {
   if (subtractHp(dmg)) {
     currentHp = subtractHp(dmg);
     hitAnimationTime = 6;
+    resetCombo();
   } else {
-    currentHp = 0;
-    isAlive = false;
+    if (godsGrace) {
+      currentHp = baseHp;
+      godsGrace = false;
+    } else {
+      currentHp = 0;
+      isAlive = false;
+    }
   }
 }
 
 void Player::draw(int x, int y) {
   if (this->moveDir == _right) {
-    gb.display.drawImage(x, y-4, playerSpriteRight);
+    if (isAlive) {
+      gb.display.drawImage(x, y-4, playerSpriteRight);
+    } else {
+      playerCorpse.setFrame(0);
+      gb.display.drawImage(x, y-3, playerCorpse);
+    }
   } else {
-    gb.display.drawImage(x, y-4, playerSpriteLeft);
+    if (isAlive) {
+      gb.display.drawImage(x, y-4, playerSpriteLeft);
+    } else {
+      playerCorpse.setFrame(1);
+      gb.display.drawImage(x, y-3, playerCorpse);
+    }
   }
 
   if (attackAnimationTime > 0) {
     attackAnimationTime--;
+    gb.lights.fill(gb.display.getPalette()[comboColor]);
     gb.display.drawImage(attackPos.x, attackPos.y-2, slash);
-  }
+  } 
   if (hitAnimationTime > 0) {
     hitAnimationTime--;
+    gb.lights.fill(RED);
     gb.display.drawImage(camera.screenPosX(posX), camera.screenPosY(posY)-2, bloodSlash);
+  }
+  if (attackAnimationTime == 0 && hitAnimationTime == 0) {
+    gb.lights.fill(BLACK);
   }
 }
 
@@ -251,6 +287,12 @@ void Player::drawGui() {
   gb.display.setColor(WHITE);
   gb.display.setCursor(8, 57);
   gb.display.print(gold); 
+
+  if (combo > 1) {
+    gb.display.setCursor(68, 57);
+    gb.display.setColor(gb.display.getPalette()[comboColor]);
+    gb.display.printf("%dx", combo); 
+  }
 }
 
 bool Player::doesCollideWithWall(byte x, byte y) {
@@ -260,7 +302,41 @@ bool Player::doesCollideWithWall(byte x, byte y) {
   return world.world[newX][newY] == 1 || world.world[newX][newY] == 4;
 }
 
-Chest::Chest(byte _posX, byte _posY) : Character(_posX, _posY, 9999, 1) {
+byte Player::calculateDmg() {
+  byte damage = this->dmg;
+
+  if(stress && currentHp <= 2) {
+    damage+=2;
+  }
+  if (comboGod && combo >= 3) {
+    damage++;
+  }
+
+  return damage;
+}
+
+void Player::increaseCombo() {
+  comboCounter++;
+
+  if (comboCounter >= 2 && comboCounter < 6) {
+    combo = 2;
+  } else if (comboCounter >= 6) {
+    combo = 3;
+  }
+}
+
+void Player::resetCombo() {
+  combo = 1;
+  comboCounter = 0;
+  comboColor = 1;
+}
+
+void Player::changeComboColor() {
+  comboColor++;
+  if (comboColor > 15) comboColor = 1;
+}
+
+Chest::Chest(byte _posX, byte _posY) : Character(_posX, _posY, 255, 1) {
   content = 0;
   hasLoot = false;
   
@@ -303,7 +379,7 @@ void Chest::pickLoot() {
     player.currentHp++;
     soundManager.playFX(HEART);
   } else {
-    player.gold += this->gold;
+    player.gold += (this->gold * player.combo);
     soundManager.playFX(COIN);
   }
 }
