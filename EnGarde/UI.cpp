@@ -120,13 +120,13 @@ void UI::showArcade() {
   gb.display.fillRect(12, 8, 56, 46);
   gb.display.drawImage(7, 56, coinUI);
   gb.display.setCursor(15, 57);
+  gb.display.setColor(WHITE);
   gb.display.print(player.gold);
 
   for (byte i = 0; i < 3; ++i) {
     byte yPos = (skills[availableSkills[i]].id-1) * 16;
     gb.display.drawImage(14+16*i+2*i, 10, skillsGui, 0, yPos, 16, 16);
   }
-  gb.display.setColor(WHITE);
   if (arcadeRow == 0) {
     if (skills[availableSkills[arcadeSkillSelection]].isAvailable) {
       gb.display.setCursor(12, 1);

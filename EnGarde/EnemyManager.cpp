@@ -80,14 +80,9 @@ bool EnemyManager::isFloorTaken(byte x, byte y) {
     }
   }
 
-  if (world.chestPos.x == x && world.chestPos.y == y) {
-    return true;
-  }
-
-  if (world.arcadePos.x == x && world.arcadePos.y == y) {
-    return true;
-  }
-
+  if (world.chestPos.x == x && world.chestPos.y == y) return true;
+  if (world.arcadePos.x == x && world.arcadePos.y == y) return true;
+  
   return false;
 }
 

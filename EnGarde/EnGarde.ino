@@ -49,15 +49,15 @@ namespace TurnManager {
 };
 
 namespace Game {
-  String chName = "";
-
+  int seed = 0;
   void enemyMove();
   void advanceTurn(int x, int y);
   void endLevel();
   void loadLevel();
   void cleanUp();
   void backToMainMenu();
-  void killOffScreen(Character& ch);
+  void fixOffScreenEnemy(Character& ch);
+  void draw();
 
   void init() {
     camera.init();
@@ -89,12 +89,8 @@ namespace Game {
       ui.showLevelProgressText();
       return;
     }
-  
-    world.draw();
-    enemyManager.drawEnemies();
-    ui.drawArcade(camera.screenPosX(world.arcadePos.x), camera.screenPosY(world.arcadePos.y)-2);
-    player.draw(camera.screenPosX(player.posX), camera.screenPosY(player.posY));
-    player.drawGui();
+
+    draw();
 
     if (!player.isAlive) {
       ui.showGameOver();
@@ -108,15 +104,6 @@ namespace Game {
       ui.showArcade();
       return;
     }
-
-    /*gb.display.setCursor(0, 9);
-    gb.display.print(gb.getFreeRam());
-    gb.display.setCursor(0, 18);
-    gb.display.print(enemyManager.enemyCount);
-    gb.display.setCursor(0, 27);
-    gb.display.print(world.enemyCount);
-    gb.display.setCursor(0, 35);
-    gb.display.print(chName);*/
 
     if (TurnManager::turnCounter > 0) {
       if (TurnManager::updateTurnTime()) {
@@ -171,7 +158,7 @@ namespace Game {
       Character* ch = enemyManager.enemies[i];
   
       if (ch->posX == newPos.x && ch->posY == newPos.y || (player.longArms && ch->posX == longArmsPos.x && ch->posY == longArmsPos.y)) {
-        if (ch->isAlive) {
+        if (ch->isAlive && world.world[ch->posX][ch->posY] != wallWithCharacter) {
           canMove = false;
           ch->takeDamage(player.calculateDmg());
           player.attackAnimationTime = 3;
@@ -195,7 +182,7 @@ namespace Game {
     for (byte i = 0; i < world.maxEnemies; ++i) {
       Character* ch = enemyManager.enemies[i];
       int turnTimer = ch->getTurnCounter();
-      killOffScreen((*ch));
+      fixOffScreenEnemy((*ch));
 
       if (TurnManager::canMove(turnTimer) && ch->isAlive) {
         ch->takeAction(0, 0);
@@ -222,16 +209,33 @@ namespace Game {
     ui.mainMenuMode = true;
   }
 
-  void killOffScreen(Character& ch) {
+  void fixOffScreenEnemy(Character& ch) {
     if (!world.isInBounds(ch.posX, ch.posY)) {
-      //chName = ch.name;
       ch.setPosition(world.chestPos.x, world.chestPos.y);
     }
+  }
+
+  void draw() {
+    world.draw();
+    enemyManager.drawEnemies();
+    ui.drawArcade(camera.screenPosX(world.arcadePos.x), camera.screenPosY(world.arcadePos.y)-2);
+    player.draw(camera.screenPosX(player.posX), camera.screenPosY(player.posY));
+    player.drawGui();
+    gb.display.setCursor(0, 9);
+    gb.display.print(gb.getFreeRam());
+    gb.display.setCursor(0, 18);
+    gb.display.print(enemyManager.enemyCount);
+    gb.display.setCursor(0, 27);
+    gb.display.print(world.enemyCount);
+    gb.display.setCursor(0, 36);
+    gb.display.print(camera.shake);
   }
 };
 
 void setup() {
-  randomSeed(analogRead(0));
+  gb.pickRandomSeed();
+  //Game::seed = analogRead(0);
+  //randomSeed(Game::seed);
   gb.begin();
 }
 

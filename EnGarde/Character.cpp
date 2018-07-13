@@ -85,27 +85,13 @@ Character::Character(byte _posX, byte _posY, byte _moveDelay, byte _baseHp) {
 }
 
 void Character::setPosition(byte x, byte y) {
-  this->posX = x;
-  this->posY = y;
+  world.world[posX][posY] = world.world[posX][posY] - 3;
+  posX = x;
+  posY = y;
+  world.world[posX][posY] = world.world[posX][posY] + 3;
 }
 
-void Character::draw(int x, int y) {
-    /*if (this->moveDir == _right) {
-    if(this->isAlive) {
-      gb.display.drawImage(x+offsetX, y-offsetY, enemySpriteRight);
-    } else {
-      enemyCorpse.setFrame(0);
-      gb.display.drawImage(x+corpseOffsetX, y-corpseOffsetY, rightCorpseSprite);
-    }
-  } else {    
-    if(this->isAlive) {
-      gb.display.drawImage(x+offsetX, y-offsetY, enemySpriteLeft);
-    } else {
-      enemyCorpse.setFrame(1);
-      gb.display.drawImage(x+corpseOffsetX, y-corpseOffsetY, enemySpriteLeft);
-    }
-  }*/
-}
+void Character::draw(int x, int y) { }
 
 void Character::takeDamage(byte dmg) {
   if(random(0, 2)) soundManager.playFX(ENEMY_HIT);
@@ -164,6 +150,14 @@ bool Character::doesCollideWithWall(byte x, byte y) {
   return world.world[newX][newY] != 2;
 }
 
+void Character::defaultAction(Vec dir, int damage) {
+  if (dir.x == player.posX && dir.y == player.posY) {
+    player.takeDamage(damage);
+  } else {
+    setPosition(dir.x, dir.y);
+  }
+}
+
 Vec Character::getDirection() {
   byte counter = 0;
   Vec possibleDirs[4];
@@ -177,13 +171,9 @@ Vec Character::getDirection() {
     }
   }
 
-  if (counter == 0) {
-    return Vec(99, 99);
-  }
+  if (counter == 0) return Vec(99, 99);
   
-  byte rnd = random(counter);
-
-  return possibleDirs[rnd];
+  return possibleDirs[random(counter)];
 }
 
 byte Character::subtractHp(byte value) {
@@ -209,6 +199,11 @@ void Player::init() {
   this->comboGod = false;
   this->longArms = false;
   this->resetCombo();
+}
+
+void Player::setPosition(byte x, byte y) {
+  posX = x;
+  posY = y;
 }
 
 void Player::takeAction(byte x, byte y) {
@@ -305,12 +300,8 @@ bool Player::doesCollideWithWall(byte x, byte y) {
 byte Player::calculateDmg() {
   byte damage = this->dmg;
 
-  if(stress && currentHp <= 2) {
-    damage+=2;
-  }
-  if (comboGod && combo >= 3) {
-    damage++;
-  }
+  if (stress && currentHp <= 2) damage+=2;
+  if (comboGod && combo >= 3) damage++;
 
   return damage;
 }
@@ -407,27 +398,14 @@ void Enemy::draw(int x, int y) {
 }
   
 void Enemy::takeAction(byte x, byte y) {
-  if(!isAlive) {
-    return;
-  }
+  if(!isAlive) return;
+
   Vec dir = astar.getNextTile(Vec(posX, posY), Vec(player.posX, player.posY), false);
 
-  if (dir.x == 99 && dir.y == 99) {
-    return;
-  }
-  
-  if (dir.x-posX != 0) {
-    this->changeDirection(dir.x-posX);
-  }
-  
-  if (dir.x == player.posX && dir.y == player.posY) {
-    player.takeDamage(1);
-  } else {
-    world.world[posX][posY] = world.world[posX][posY] - 3;
-    posX = dir.x;
-    posY = dir.y;
-    world.world[posX][posY] = world.world[posX][posY] + 3;
-  }
+  if (dir.x == 99 && dir.y == 99) return;
+
+  this->changeDirection(dir.x-posX);
+  this->defaultAction(dir, 1);
 }
 
 Skull::Skull(byte _posX, byte _posY, byte _baseHp)
@@ -453,27 +431,13 @@ void Skull::draw(int x, int y) {
 }
   
 void Skull::takeAction(byte x, byte y) {
-  if(!isAlive) {
-    return;
-  }
+  if(!isAlive) return;
+
   Vec dir = getDirection();
+  if (dir.x == 99 && dir.y == 99) return;
 
-  if (dir.x == 99 && dir.y == 99) {
-    return;
-  }
-
-  if (dir.x != 0) {
-    this->changeDirection(dir.x);
-  }
-  
-  if (dir.x+posX == player.posX && dir.y+posY == player.posY) {
-    player.takeDamage(1);
-  } else {
-    world.world[posX][posY] = world.world[posX][posY] - 3;
-    posX += dir.x;
-    posY += dir.y;
-    world.world[posX][posY] = world.world[posX][posY] + 3;
-  }
+  this->changeDirection(dir.x);
+  this->defaultAction(Vec(posX + dir.x, posY + dir.y), 1);
 }
 
 BloodSkull::BloodSkull(byte _posX, byte _posY, byte _baseHp)
@@ -523,32 +487,20 @@ void Ghost::draw(int x, int y) {
 }
   
 void Ghost::takeAction(byte x, byte y) {
-  if(!isAlive) {
-    return;
-  }
-  Vec dir = astar.getNextTile(Vec(posX, posY), Vec(player.posX, player.posY), true);
+  if(!isAlive) return;
 
-  if (dir.x == 99 && dir.y == 99) {
-    return;
-  }
+  Vec newPos = astar.getNextTile(Vec(posX, posY), Vec(player.posX, player.posY), true);
 
-  if (dir.x-posX != 0) {
-    this->changeDirection(dir.x-posX);
-  }
-  
-  if (dir.x == player.posX && dir.y == player.posY) {
-    player.takeDamage(1);
-  } else {
-    world.world[posX][posY] = world.world[posX][posY] - 3;
-    posX = dir.x;
-    posY = dir.y;
-    world.world[posX][posY] = world.world[posX][posY] + 3;
-  }
+  if (newPos.x == 99 && newPos.y == 99) return;
+
+  this->changeDirection(newPos.x-posX);
+  this->defaultAction(newPos, 1);
 }
 
 Rat::Rat(byte _posX, byte _posY, byte _baseHp)
   : Character(_posX, _posY, 2, _baseHp) {
     currentDir = getDirection();
+    changeDirection(currentDir.x);
   }
 
 void Rat::draw(int x, int y) {
@@ -571,25 +523,14 @@ void Rat::draw(int x, int y) {
 }
   
 void Rat::takeAction(byte x, byte y) {
-  if(!isAlive) {
-    return;
-  }
+  if (!isAlive) return;
   if ((currentDir.x == 99 && currentDir.y == 99) || doesCollideWithWall(currentDir.x, currentDir.y)) {
     currentDir = getDirection();
     this->changeDirection(currentDir.x);
     return;
   }
 
-  Vec nextPos = Vec(posX + currentDir.x, posY + currentDir.y);
-  
-  if (nextPos.x == player.posX && nextPos.y == player.posY) {
-    player.takeDamage(1);
-  } else {
-    world.world[posX][posY] = world.world[posX][posY] - 3;
-    posX = nextPos.x;
-    posY = nextPos.y;
-    world.world[posX][posY] = world.world[posX][posY] + 3;
-  }
+  this->defaultAction(Vec(posX + currentDir.x, posY + currentDir.y), 1);
 }
 
 Necromancer::Necromancer(byte _posX, byte _posY, byte _baseHp)
@@ -633,10 +574,7 @@ void Necromancer::draw(int x, int y) {
 }
   
 void Necromancer::takeAction(byte x, byte y) {
-  if(!isAlive) {
-    return;
-  }
-
+  if(!isAlive) return;
   if (charge) {
     for (short i = posX + moveDir; ;i+=moveDir) {
       if (i < 0 || i >= world_size) break;
@@ -651,27 +589,16 @@ void Necromancer::takeAction(byte x, byte y) {
     return;
   }
   
-  Vec dir = astar.getNextTile(Vec(posX, posY), Vec(player.posX, player.posY), false);
+  Vec newPos = astar.getNextTile(Vec(posX, posY), Vec(player.posX, player.posY), false);
 
-  if (dir.x == 99 && dir.y == 99) {
-    return;
-  }
-  if (dir.x-posX != 0) {
-    this->changeDirection(dir.x-posX);
-  }
+  if (newPos.x == 99 && newPos.y == 99) return;
+  this->changeDirection(newPos.x-posX);
   if (posY == player.posY && camera.isInBounds(posX, posY)) {
     charge = true;
     return;
   }
   
-  if (dir.x == player.posX && dir.y == player.posY) {
-    player.takeDamage(1);
-  } else {
-    world.world[posX][posY] = world.world[posX][posY] - 3;
-    posX = dir.x;
-    posY = dir.y;
-    world.world[posX][posY] = world.world[posX][posY] + 3;
-  }
+  this->defaultAction(newPos, 1);
 }
 
 

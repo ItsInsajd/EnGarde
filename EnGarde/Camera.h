@@ -8,7 +8,7 @@ class Camera {
     int posX;
     int posY;
     short shake;
-
+    
     void init();
     void setPosition(int _posX, int _posY);
     void moveCamera(int x, int y);

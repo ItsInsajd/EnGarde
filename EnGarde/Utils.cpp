@@ -18,7 +18,3 @@ bool Vec::operator!=(const Vec& b) {
 
   return !(vec.x != b.x && vec.y != b.y);
 }
-
-short Utils::nextValue(short value, short maxValue) {
-  return value+1 <= maxValue ? value+1 : 0;
-}

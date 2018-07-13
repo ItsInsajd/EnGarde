@@ -14,7 +14,6 @@ struct Vec {
 };
 
 namespace Utils {
-  short nextValue(short value, short maxValue);
   template <typename T>
   void shuffleArray(T* arr, size_t size) {
     for (short i = 0; i < size; ++i) {

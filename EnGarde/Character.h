@@ -17,10 +17,9 @@ class Character {
 
     Character();
     Character(byte _posX, byte _posY, byte _moveDelay, byte _baseHp);
-    void setPosition(byte x, byte y);
     void changeDirection(short dir);
     byte getTurnCounter();
-    void drawLoot(byte x, byte y);
+    virtual void setPosition(byte x, byte y);
     virtual void takeDamage(byte dmg);
     virtual void draw(int x, int y);
     virtual bool doesCollideWithWall(byte x, byte y);
@@ -34,6 +33,8 @@ class Character {
     
     Vec getDirection();
     byte subtractHp(byte value);
+    void drawLoot(byte x, byte y);
+    void defaultAction(Vec dir, int damage);
 };
 
 class Player : public Character {
@@ -54,6 +55,7 @@ class Player : public Character {
     Player();
     Player(byte _posX, byte _posY);
     void init();
+    void setPosition(byte x, byte y);
     void drawGui();
     void draw(int x, int y);
     void takeAction(byte x, byte y);

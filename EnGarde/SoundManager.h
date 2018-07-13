@@ -19,7 +19,18 @@ class SoundManager {
     
     void playFX(byte trackNumber);
   private:
-    char* tracks[10] = { "coin.wav", "enemyHit.wav", "enemyHit2.wav", "playerHit.wav", "portalOpened.wav", "heart.wav", "arcadeOff.wav", "skillUp.wav", "reroll.wav", "lackOfGold.wav" };
+    char* tracks[10] = { 
+      "coin.wav", 
+      "enemyHit.wav", 
+      "enemyHit2.wav", 
+      "playerHit.wav", 
+      "portalOpened.wav", 
+      "heart.wav", 
+      "arcadeOff.wav", 
+      "skillUp.wav", 
+      "reroll.wav", 
+      "lackOfGold.wav" 
+    };
 };
 
 extern SoundManager soundManager;
