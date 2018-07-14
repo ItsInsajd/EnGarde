@@ -292,9 +292,9 @@ void UI::drawOverlay() {
   gb.display.drawFastHLine(0, 0, gb.display.width());
   gb.display.drawFastHLine(0, 63, gb.display.width());
   gb.display.drawImage(3, 3, pin);
-  gb.display.drawImage(3, 57, pin);
+  gb.display.drawImage(3, 58, pin);
   gb.display.drawImage(74, 3, pin);
-  gb.display.drawImage(74, 57, pin);
+  gb.display.drawImage(74, 58, pin);
 }
 
 UI ui;

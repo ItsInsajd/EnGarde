@@ -230,14 +230,14 @@ namespace Game {
     ui.drawArcade(camera.screenPosX(world.arcadePos.x), camera.screenPosY(world.arcadePos.y)-2);
     player.draw(camera.screenPosX(player.posX), camera.screenPosY(player.posY));
     player.drawGui();
-    gb.display.setCursor(0, 9);
+    /*gb.display.setCursor(0, 9);
     gb.display.print(gb.getFreeRam());
     gb.display.setCursor(0, 18);
     gb.display.print(enemyManager.enemyCount);
     gb.display.setCursor(0, 27);
     gb.display.print(world.enemyCount);
     gb.display.setCursor(0, 36);
-    gb.display.print(camera.shake);
+    gb.display.print(camera.shake);*/
   }
 };
 

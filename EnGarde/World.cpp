@@ -125,7 +125,7 @@ void World::setEnemyCounter() {
     maxEnemies = max_enemies-1;
   }
   
-  this->enemyCount = this->maxEnemies - 1;
+  this->enemyCount = this->maxEnemies;
 }
 
 void World::draw() {

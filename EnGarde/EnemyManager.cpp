@@ -8,19 +8,11 @@ EnemyManager::EnemyManager() {
 }
 
 void EnemyManager::createEnemies() {
-  enemyCount = world.maxEnemies;
-
-  if (world.chestPos.x != world.playerPos.x && world.chestPos.y != world.playerPos.y
-    && world.chestPos.x != world.arcadePos.x && world.chestPos.y != world.arcadePos.y) {
-    enemyCount--;
-    enemies[world.maxEnemies-1] = new Chest(world.chestPos.x, world.chestPos.y);
-    world.world[world.chestPos.x][world.chestPos.y] = world.world[world.chestPos.x][world.chestPos.y] + 3;
-  } else {
-    world.enemyCount++;
-  }
+  enemyCount = world.enemyCount;
 
   floors = new Vec[world.floorCount];
   short count = 0;
+  bool hasChest = world.chestPos.x != world.playerPos.x && world.chestPos.y != world.playerPos.y && world.chestPos.x != world.arcadePos.x && world.chestPos.y != world.arcadePos.y;
   
   for (byte i = 0; i < world_size+1; ++i) {
     for (byte j = 0; j < world_size+1; ++j) {
@@ -42,13 +34,16 @@ void EnemyManager::createEnemies() {
 
     Vec pos = floors[floorCounter];
     
-    if (i == enemyCount-1 && world.currentLevel == 4) {
+    if (i == enemyCount-2 && world.currentLevel == 4) {
       enemies[i] = new Necromancer(pos.x, pos.y, 6);
+      world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
+    } else if (i == enemyCount-1 && hasChest) {
+      world.enemyCount--;
+      enemies[world.maxEnemies-1] = new Chest(world.chestPos.x, world.chestPos.y);
+      world.world[world.chestPos.x][world.chestPos.y] = world.world[world.chestPos.x][world.chestPos.y] + 3;
     } else {
       spawnGraveyardEnemies(pos, i);
     }
-
-    world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
     floorCounter++;
   }
   
@@ -69,6 +64,7 @@ void EnemyManager::spawnGraveyardEnemies(Vec pos, byte i) {
   } else {
     enemies[i] = new Rat(pos.x, pos.y, 2);
   }
+  world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
 }
 
 bool EnemyManager::isFloorTaken(byte x, byte y) {
