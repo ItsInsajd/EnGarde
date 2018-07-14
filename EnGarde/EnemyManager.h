@@ -14,6 +14,7 @@ class EnemyManager {
     void drawEnemies();
     void cleanUpEnemies();
     void spawnGraveyardEnemies(Vec pos, byte i);
+    void spawnMineEnemies(Vec pos, byte i);
 };
 
 extern EnemyManager enemyManager;

@@ -121,6 +121,16 @@ class Necromancer : public Character {
     void drawLaser();
 };
 
+class Golem : public Character {
+  public:
+    Golem(byte _posX, byte _posY, byte _baseHp);
+    void takeAction(byte x, byte y);
+    void draw(int x, int y);
+  private:
+    byte punchAnimationTime;
+    Vec attackDir;
+};
+
 extern Player player;
 
 #endif

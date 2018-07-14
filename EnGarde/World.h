@@ -32,6 +32,9 @@ class World {
     Vec moveInDirectionNoBacktrack(Vec& cur, Vec& last);
     void setEnemyCounter();
     void updateProgress();
+    void drawWall(byte x, byte y, byte frame);
+    void drawFloor(byte x, byte y);
+    void drawObstacle(byte x, byte y);
 };
 
 extern World world;

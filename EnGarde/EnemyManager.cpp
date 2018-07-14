@@ -42,7 +42,13 @@ void EnemyManager::createEnemies() {
       enemies[world.maxEnemies-1] = new Chest(world.chestPos.x, world.chestPos.y);
       world.world[world.chestPos.x][world.chestPos.y] = world.world[world.chestPos.x][world.chestPos.y] + 3;
     } else {
-      spawnGraveyardEnemies(pos, i);
+      if (world.currentWorld == 1) {
+        spawnGraveyardEnemies(pos, i);
+      } else if (world.currentWorld == 2) {
+        spawnMineEnemies(pos, i);
+      } else {
+        spawnGraveyardEnemies(pos, i);
+      }
     }
     floorCounter++;
   }
@@ -55,6 +61,23 @@ void EnemyManager::spawnGraveyardEnemies(Vec pos, byte i) {
 
   if (enemyType == 0) {
     enemies[i] = new Skull(pos.x, pos.y, 1);
+  } else if (enemyType == 1) {
+    enemies[i] = new Enemy(pos.x, pos.y, 2);
+  } else if (enemyType == 2) {
+    enemies[i] = new BloodSkull(pos.x, pos.y, 1);
+  } else if (enemyType == 3) {
+    enemies[i] = new Ghost(pos.x, pos.y, 1);
+  } else {
+    enemies[i] = new Rat(pos.x, pos.y, 2);
+  }
+  world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
+}
+
+void EnemyManager::spawnMineEnemies(Vec pos, byte i) {
+  byte enemyType = random(0, 1);
+
+  if (enemyType == 0) {
+    enemies[i] = new Golem(pos.x, pos.y, 4);
   } else if (enemyType == 1) {
     enemies[i] = new Enemy(pos.x, pos.y, 2);
   } else if (enemyType == 2) {
@@ -85,7 +108,7 @@ bool EnemyManager::isFloorTaken(byte x, byte y) {
 void EnemyManager::drawEnemies() {
   for (byte i = 0; i < world.maxEnemies; ++i) {
     Character* ch = enemies[i];
-    ch->draw(camera.screenPosX(ch->posX) - 2, camera.screenPosY(ch->posY));
+    ch->draw(camera.screenPosX(ch->posX), camera.screenPosY(ch->posY));
   }
 }
 
