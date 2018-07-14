@@ -7,6 +7,8 @@ class Camera {
     int camHeight;
     int posX;
     int posY;
+    int effectivePosX;
+    int effectivePosY;
     short shake;
     
     void init();

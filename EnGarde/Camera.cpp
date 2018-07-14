@@ -16,11 +16,13 @@ void Camera::setPosition(int x, int y) {
     
   posX = CLAMP(nx, 0, worldWidth-camWidth);
   posY = CLAMP(ny, 0, worldWidth-camHeight);
+  effectivePosX = posX;
+  effectivePosY = posY;
 }
 
 void Camera::moveCamera(int x, int y) {
-  int nx = (x*sprite_size-posX-shake-camWidth/2);
-  int ny = (y*sprite_size-posY-shake-camHeight/2);
+  int nx = (x*sprite_size-posX-camWidth/2);
+  int ny = (y*sprite_size-posY-camHeight/2);
 
   if (nx >= 1) nx = 2;
   if (nx <= -1) nx = -2;
@@ -28,11 +30,16 @@ void Camera::moveCamera(int x, int y) {
   if (ny <= -1) ny = -2;
     
   shake = shake * -1 * 0.9;
-
-  int newX = posX + nx + shake;
-  int newY = posY + ny + shake;
-  posX = CLAMP(newX, 0, worldWidth-camWidth);
-  posY = CLAMP(newY, 0, worldWidth-camHeight);
+  
+  int baseX = posX + nx;
+  int baseY = posY + ny;
+  posX = CLAMP(baseX, 0, worldWidth-camWidth);
+  posY = CLAMP(baseY, 0, worldWidth-camHeight);
+  
+  int effX = posX + shake;
+  int effY = posY + shake;
+  effectivePosX = CLAMP(effX, 0, worldWidth-camWidth);
+  effectivePosY = CLAMP(effY, 0, worldWidth-camHeight);
 }
 
 void Camera::shakeScreen(byte value) {
@@ -44,11 +51,11 @@ bool Camera::isInBounds(byte x, byte y) {
 }
 
 int Camera::screenPosX(int v) {
-  return v*sprite_size-posX-4;
+  return v*sprite_size-effectivePosX-4;
 }
 
 int Camera::screenPosY(int v) {
-  return v*sprite_size-posY-4;
+  return v*sprite_size-effectivePosY-4;
 }
 
 Camera camera;

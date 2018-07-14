@@ -89,6 +89,16 @@ namespace Game {
       ui.showLevelProgressText();
       return;
     }
+    if (ui.isPause) {
+      ui.showPauseScreen();
+      if (gb.buttons.pressed(BUTTON_A)) {
+        ui.isPause = false;
+      } else if (gb.buttons.pressed(BUTTON_B)) {
+        ui.isPause = false;
+        backToMainMenu();
+      }
+      return;
+    }
 
     draw();
 
@@ -127,8 +137,7 @@ namespace Game {
       enemyMove();
     }
     if (gb.buttons.pressed(BUTTON_MENU)) {
-      backToMainMenu();
-      return;
+      ui.isPause = true;
     }
 
     camera.moveCamera(player.posX, player.posY);

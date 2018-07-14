@@ -21,6 +21,7 @@ class UI {
     bool mainMenuMode = true;
     bool tutorial = false;
     bool arcadeOpened = false;
+    bool isPause = false;
     byte mainMenuAnim = 48;
     byte mainMenuSelection = 0;
     byte tutorialTimer = 50;
@@ -39,9 +40,11 @@ class UI {
     void shuffleSkills();
     void drawArcade(short x, short y);
     void showTutorial();
+    void showPauseScreen();
 
   private:
     void arcadeAction();
+    void drawOverlay();
 };
 
 extern UI ui;
