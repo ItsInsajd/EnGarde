@@ -131,6 +131,45 @@ class Golem : public Character {
     Vec attackDir;
 };
 
+class Dwarf : public Character {
+  public:
+    Dwarf(byte _posX, byte _posY, byte _baseHp);
+    void takeAction(byte x, byte y);
+    void draw(int x, int y);
+  protected:
+    bool moveAfterDig;
+    byte digAnimationTime;
+    Vec attackDir;
+};
+
+class DwarfWarrior : public Dwarf {
+  public:
+    DwarfWarrior(byte _posX, byte _posY, byte _baseHp);
+    void draw(int x, int y);
+};
+
+class SkeletonCart : public Character {
+  public:
+    SkeletonCart(byte _posX, byte _posY, byte _baseHp);
+    void takeAction(byte x, byte y);
+    void draw(int x, int y);
+  private:
+    byte stunTimer;
+    Vec attackDir;
+};
+
+class BombFrog : public Character {
+  public:
+    BombFrog(byte _posX, byte _posY, byte _baseHp);
+    void takeAction(byte x, byte y);
+    void draw(int x, int y);
+    void takeDamage(byte dmg);
+  private:
+    byte bombTimer;
+    byte explosionTimer;
+    bool hasBomb;
+};
+
 extern Player player;
 
 #endif

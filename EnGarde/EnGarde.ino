@@ -193,7 +193,7 @@ namespace Game {
       int turnTimer = ch->getTurnCounter();
       fixOffScreenEnemy((*ch));
 
-      if (TurnManager::canMove(turnTimer) && ch->isAlive) {
+      if (TurnManager::canMove(turnTimer)) {
         ch->takeAction(0, 0);
       }
     }
@@ -226,8 +226,8 @@ namespace Game {
 
   void draw() {
     world.draw();
-    enemyManager.drawEnemies();
     ui.drawArcade(camera.screenPosX(world.arcadePos.x), camera.screenPosY(world.arcadePos.y)-2);
+    enemyManager.drawEnemies();
     player.draw(camera.screenPosX(player.posX), camera.screenPosY(player.posY));
     player.drawGui();
     /*gb.display.setCursor(0, 9);
