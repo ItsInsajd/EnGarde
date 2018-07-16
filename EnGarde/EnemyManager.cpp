@@ -74,10 +74,16 @@ void EnemyManager::spawnGraveyardEnemies(Vec pos, byte i) {
 }
 
 void EnemyManager::spawnMineEnemies(Vec pos, byte i) {
-  byte enemyType = random(0, 4);
+  byte enemyType = random(0, 5);
+  byte golemsAmount = 2 + world.currentLevel / 2;
 
   if (enemyType == 0) {
-    enemies[i] = new Golem(pos.x, pos.y, 5);
+    if (golemsAmount > 0) {
+      enemies[i] = new Golem(pos.x, pos.y, 5);
+      golemsAmount--;
+    } else {
+      enemies[i] = new Skull(pos.x, pos.y, 1);
+    }
   } else if (enemyType == 1) {
     if (random(0,4) == 0) {
       enemies[i] = new DwarfWarrior(pos.x, pos.y, 5);
@@ -89,7 +95,7 @@ void EnemyManager::spawnMineEnemies(Vec pos, byte i) {
   } else if (enemyType == 3) {
     enemies[i] = new BombFrog(pos.x, pos.y, 1);
   } else {
-    enemies[i] = new Rat(pos.x, pos.y, 2);
+    enemies[i] = new BloodSkull(pos.x, pos.y, 1);
   }
   world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
 }

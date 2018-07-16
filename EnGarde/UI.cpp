@@ -23,17 +23,18 @@ Image skillsGui = Image(skillsGuiData);
 const uint16_t pinData[] = {3,3,1, 0, 0xca30, 0, 0xca30,0xffff,0xca30,0xffff,0xffff,0xffff,0xca30,0xffff,0xca30};
 Image pin = Image(pinData);
 
-const byte skillCount = 9;
+const byte skillCount = 10;
 Skill skills[] = {
   Skill(1, "Health up", "Max HP +1", 40),
   Skill(1, "Health up", "Max HP +1", 40),
   Skill(1, "Health up", "Max HP +1", 40),
+  Skill(1, "Health up", "Max HP +1", 40),
   Skill(2, "Long arms", "Att range +1", 90),
-  Skill(3, "Attack up", "Dmg +1", 90),
-  Skill(4, "Stress", "Dmg+2 at last \3", 80),
+  Skill(3, "Attack up", "Dmg +1", 70),
+  Skill(4, "Stress", "Dmg+2 at last \3", 65),
   Skill(5, "Bloodlust", "Kills heal", 120),
-  Skill(6, "God's grace", "1 UP", 90),
-  Skill(7, "Combo god", "Dmg+1 at 3x combo", 80)
+  Skill(6, "God's grace", "1 UP", 100),
+  Skill(7, "Combo god", "Dmg+1 at 3x combo", 65)
 };
 
 Skill::Skill(byte _id, char* _name, char* _desc, byte _cost) {
@@ -217,6 +218,10 @@ void UI::arcadeAction() {
       } else if (selectedSkill.id == 2) {
         player.longArms = true;
       } else if (selectedSkill.id == 3) {
+        if (player.dmg <= 2) {
+          skills[availableSkills[arcadeSkillSelection]].isAvailable = true;
+          skills[availableSkills[arcadeSkillSelection]].cost *= 2;
+        }
         player.dmg++;
       } else if (selectedSkill.id == 4) {
         player.stress = true;
