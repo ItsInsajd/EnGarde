@@ -12,6 +12,7 @@ class Character {
     byte baseHp;
     byte currentHp;
     bool hasLoot;
+    bool explosionRound = false;
     byte gold;
     byte dmg;
 

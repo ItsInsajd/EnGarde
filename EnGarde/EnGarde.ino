@@ -196,9 +196,13 @@ namespace Game {
       if (TurnManager::canMove(turnTimer)) {
         ch->takeAction(0, 0);
       }
+      if(ch->explosionRound) {
+        ch->explosionRound = false;
+        enemyManager.explosion(ch->posX, ch->posY, i);
+      }
     }
   }
-  
+
   void endLevel() {
     cleanUp();
     loadLevel();

@@ -865,7 +865,8 @@ void BombFrog::takeAction(byte x, byte y) {
       hasBomb = false;
       explosionTimer = 5;
       soundManager.playFX(EXPLOSION);
-
+      explosionRound = true;
+      
       for (short i = -1; i <= 1; ++i) {
         for (short j = -1; j <= 1; ++j) {
           if (player.posX == posX+i && player.posY == posY+j) {

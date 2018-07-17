@@ -128,5 +128,15 @@ void EnemyManager::cleanUpEnemies() {
   }
 }
 
+void EnemyManager::explosion(byte posX, byte posY, byte sameId) {
+    for (byte i = 0; i < world.maxEnemies; ++i) {
+      Character* ch = enemies[i];
+      
+      if (ch->isAlive && ch->posX >= posX-1 && ch->posX <= posX+1 && ch->posY >= posY-1 && ch->posY <= posY+1) {
+        ch->takeDamage(1);
+      }
+    }
+  }
+
 EnemyManager enemyManager;
 
