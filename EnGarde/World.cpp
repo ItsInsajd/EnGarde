@@ -178,6 +178,30 @@ bool World::isInBounds(short x, short y) {
   return x > 0 && x < world_size && y > 0 && y < world_size;
 }
 
+bool World::isInEyeSightX(Vec source, Vec target) {
+  short direction = Utils::calculateDirection(source, target).x;
+
+  for (short i = source.x + direction; ;i+=direction) {
+    if (i < 0 || i >= world_size) return false;
+    if (isWall(i, source.y)) return false;
+    if (i == target.x && source.y == target.y) {
+      return true;
+    }
+  }
+}
+
+bool World::isInEyeSightY(Vec source, Vec target) {
+  short direction = Utils::calculateDirection(source, target).y;
+
+  for (short j = source.y + direction; ;j+=direction) {
+    if (j < 0 || j >= world_size) return false;
+    if (isWall(source.x, j)) return false;
+    if (j == target.y && source.x == target.x) {
+      return true;
+    }
+  }
+}
+
 void World::drawWall(byte x, byte y, byte frame) {
   switch(currentWorld) {
     case 1:

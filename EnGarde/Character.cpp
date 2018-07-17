@@ -811,10 +811,10 @@ void SkeletonCart::takeAction(byte x, byte y) {
     return;
   }
   if (attackDir.x == 99 && attackDir.y == 99) {
-    if (posY == player.posY) {
+    if (posY == player.posY && world.isInEyeSightX(Vec(posX, posY), Vec(player.posX, player.posY))) {
       posX > player.posX ? attackDir = Vec(-1, 0) : attackDir = Vec(1, 0);
     }
-    if (posX == player.posX) {
+    if (posX == player.posX && world.isInEyeSightY(Vec(posX, posY), Vec(player.posX, player.posY))) {
       posY > player.posY ? attackDir = Vec(0, -1) : attackDir = Vec(0, 1);
     }
     this->changeDirection(attackDir.x);
