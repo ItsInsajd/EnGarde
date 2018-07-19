@@ -19,7 +19,7 @@ const uint8_t crystalData[] = {8, 8, 1, 0, 0, 0x00, 1, 0x00, 0x00,0x20, 0x00,0x0
 Image crystal = Image(crystalData);
 
 void World::init() {
-  currentWorld = 2;
+  currentWorld = 1;
   currentLevel = 0;
 }
 

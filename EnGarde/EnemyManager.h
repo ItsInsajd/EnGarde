@@ -5,6 +5,7 @@
 class EnemyManager {
   public:
     byte enemyCount;
+    byte hardEnemyCount;
     Character *enemies[max_enemies];
     Vec* floors;
   

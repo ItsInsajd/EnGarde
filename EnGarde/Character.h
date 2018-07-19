@@ -43,7 +43,9 @@ class Player : public Character {
     short gold;
     byte attackAnimationTime;
     byte hitAnimationTime;
+    byte digAnimationTime;
     byte combo = 0;
+    byte armor;
     short comboCounter = 0;
     byte comboColor = 0;
     Vec attackPos;
@@ -52,7 +54,8 @@ class Player : public Character {
     bool godsGrace;
     bool comboGod;
     bool longArms;
-    
+    bool shovel;
+
     Player();
     Player(byte _posX, byte _posY);
     void init();
@@ -61,6 +64,7 @@ class Player : public Character {
     void draw(int x, int y);
     void takeAction(byte x, byte y);
     void takeDamage(byte dmg);
+    void heal(byte hp);
     bool doesCollideWithWall(byte x, byte y);
     byte calculateDmg();
     void increaseCombo();
@@ -81,6 +85,12 @@ class Enemy : public Character {
   public:
     Enemy(byte _posX, byte _posY, byte _baseHp);
     void takeAction(byte x, byte y);
+    void draw(int x, int y);
+};
+
+class Goblin : public Enemy {
+  public:
+    Goblin(byte _posX, byte _posY, byte _baseHp);
     void draw(int x, int y);
 };
 
@@ -165,10 +175,21 @@ class BombFrog : public Character {
     void takeAction(byte x, byte y);
     void draw(int x, int y);
     void takeDamage(byte dmg);
-  private:
+  protected:
     byte bombTimer;
     byte explosionTimer;
     bool hasBomb;
+    void explode();
+};
+
+class BombGoblin : public BombFrog {
+  public:
+    BombGoblin(byte _posX, byte _posY, byte _baseHp);
+    void takeAction(byte x, byte y);
+    void draw(int x, int y);
+    void takeDamage(byte dmg);
+  private:
+    byte stunTimer;
 };
 
 extern Player player;
