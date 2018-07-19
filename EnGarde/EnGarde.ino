@@ -69,7 +69,7 @@ namespace Game {
   
   void loadLevel() {
     ui.levelTextTimer = 50;
-    ui.shuffleSkills();
+    ui.refreshArcade();
     world.create();
     player.setPosition(world.playerPos.x, world.playerPos.y);
     enemyManager.createEnemies();
@@ -144,7 +144,8 @@ namespace Game {
   }
   
   void advanceTurn(int x, int y) {
-    if (player.posX+x == world.arcadePos.x && player.posY+y == world.arcadePos.y) {
+    Vec newPos = Vec(player.posX + x, player.posY + y);
+    if (newPos.x == world.arcadePos.x && newPos.y == world.arcadePos.y) {
       if (world.enemyCount > 0) {
         soundManager.playFX(ARCADE_OFF);
         enemyMove();
@@ -155,11 +156,16 @@ namespace Game {
       }
     }
     if (player.doesCollideWithWall(x, y)) {
+      if (player.shovel && world.isInBounds(newPos.x, newPos.y)) {
+        player.digAnimationTime = 4;
+        player.attackPos = Vec(camera.screenPosX(newPos.x), camera.screenPosY(newPos.y));
+        world.world[newPos.x][newPos.y] = world.world[newPos.x][newPos.y] + 1;
+        enemyMove();
+      }
       return;
     }
 
     TurnManager::resetTurnTime();
-    Vec newPos = Vec(player.posX + x, player.posY + y);
     Vec longArmsPos = Vec(player.posX + x*2, player.posY + y*2);
     bool canMove = true;
     
@@ -193,12 +199,16 @@ namespace Game {
       int turnTimer = ch->getTurnCounter();
       fixOffScreenEnemy((*ch));
 
-      if (TurnManager::canMove(turnTimer) && ch->isAlive) {
+      if (TurnManager::canMove(turnTimer)) {
         ch->takeAction(0, 0);
+      }
+      if(ch->explosionRound) {
+        ch->explosionRound = false;
+        enemyManager.explosion(ch->posX, ch->posY, i);
       }
     }
   }
-  
+
   void endLevel() {
     cleanUp();
     loadLevel();
@@ -226,8 +236,8 @@ namespace Game {
 
   void draw() {
     world.draw();
-    enemyManager.drawEnemies();
     ui.drawArcade(camera.screenPosX(world.arcadePos.x), camera.screenPosY(world.arcadePos.y)-2);
+    enemyManager.drawEnemies();
     player.draw(camera.screenPosX(player.posX), camera.screenPosY(player.posY));
     player.drawGui();
     /*gb.display.setCursor(0, 9);

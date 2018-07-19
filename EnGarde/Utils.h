@@ -23,6 +23,7 @@ namespace Utils {
       arr[i] = temp;
     }
   }
+  Vec calculateDirection(Vec source, Vec target);
 };
 
 #endif

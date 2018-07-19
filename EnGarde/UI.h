@@ -27,23 +27,29 @@ class UI {
     byte tutorialTimer = 50;
     byte tutorialCount = 0;
     byte arcadeSkillSelection = 0;
+    byte arcadeExtraSelection = 0;
     byte arcadeOptionSelection = 0;
+    byte arcadeHealingStock = 0;
     byte arcadeRow = 0;
     byte availableSkills[3];
     byte shuffleCost = 10;
-    
+    byte healCost = 15;
+
     void showLevelProgressText();
     void showGameOver();
     void showMainMenu();
     void initArcade();
     void showArcade();
+    void refreshArcade();
     void shuffleSkills();
     void drawArcade(short x, short y);
     void showTutorial();
     void showPauseScreen();
+    void resetSkillPrices();
 
   private:
     void arcadeAction();
+    void arcadeExtraAction();
     void drawOverlay();
 };
 

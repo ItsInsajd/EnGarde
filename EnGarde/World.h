@@ -6,7 +6,7 @@
 
 class World {
   public:
-    byte world[world_size+1][world_size+1]; //take note if worlds are smaller with byte
+    byte world[world_size+1][world_size+1];
     int floorCount;
     byte maxEnemies;
     short enemyCount;
@@ -21,6 +21,9 @@ class World {
     void start();
     bool isWall(byte x, byte y);
     bool isInBounds(short x, short y);
+    bool isInEyeSightX(Vec source, Vec target);
+    bool isInEyeSightY(Vec source, Vec target);
+
   private:
     const Vec directions[4] = { Vec(0, -1), Vec(1, 0), Vec(0, 1), Vec(-1, 0) };
     
@@ -32,6 +35,9 @@ class World {
     Vec moveInDirectionNoBacktrack(Vec& cur, Vec& last);
     void setEnemyCounter();
     void updateProgress();
+    void drawWall(byte x, byte y, byte frame);
+    void drawFloor(byte x, byte y);
+    void drawObstacle(byte x, byte y);
 };
 
 extern World world;

@@ -9,7 +9,7 @@ EnemyManager::EnemyManager() {
 
 void EnemyManager::createEnemies() {
   enemyCount = world.enemyCount;
-
+  hardEnemyCount = 0;
   floors = new Vec[world.floorCount];
   short count = 0;
   bool hasChest = world.chestPos.x != world.playerPos.x && world.chestPos.y != world.playerPos.y && world.chestPos.x != world.arcadePos.x && world.chestPos.y != world.arcadePos.y;
@@ -35,14 +35,26 @@ void EnemyManager::createEnemies() {
     Vec pos = floors[floorCounter];
     
     if (i == enemyCount-2 && world.currentLevel == 4) {
-      enemies[i] = new Necromancer(pos.x, pos.y, 6);
+      if (world.currentWorld == 1) {
+        enemies[i] = new Necromancer(pos.x, pos.y, 7);
+      } else if (world.currentWorld == 2) {
+        enemies[i] = new BombGoblin(pos.x, pos.y, 10);
+      } else {
+        enemies[i] = new Necromancer(pos.x, pos.y, 7);
+      }
       world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
     } else if (i == enemyCount-1 && hasChest) {
       world.enemyCount--;
       enemies[world.maxEnemies-1] = new Chest(world.chestPos.x, world.chestPos.y);
       world.world[world.chestPos.x][world.chestPos.y] = world.world[world.chestPos.x][world.chestPos.y] + 3;
     } else {
-      spawnGraveyardEnemies(pos, i);
+      if (world.currentWorld == 1) {
+        spawnGraveyardEnemies(pos, i);
+      } else if (world.currentWorld == 2) {
+        spawnMineEnemies(pos, i);
+      } else {
+        spawnGraveyardEnemies(pos, i);
+      }
     }
     floorCounter++;
   }
@@ -56,7 +68,12 @@ void EnemyManager::spawnGraveyardEnemies(Vec pos, byte i) {
   if (enemyType == 0) {
     enemies[i] = new Skull(pos.x, pos.y, 1);
   } else if (enemyType == 1) {
-    enemies[i] = new Enemy(pos.x, pos.y, 2);
+    if (random(0, 3) == 0 && hardEnemyCount < 2) {
+      hardEnemyCount++;
+      enemies[i] = new Goblin(pos.x, pos.y, 3);
+    } else {
+      enemies[i] = new Enemy(pos.x, pos.y, 2);
+    }
   } else if (enemyType == 2) {
     enemies[i] = new BloodSkull(pos.x, pos.y, 1);
   } else if (enemyType == 3) {
@@ -67,9 +84,36 @@ void EnemyManager::spawnGraveyardEnemies(Vec pos, byte i) {
   world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
 }
 
+void EnemyManager::spawnMineEnemies(Vec pos, byte i) {
+  byte enemyType = random(0, 5);
+  byte golemsAmount = 2 + world.currentLevel / 2;
+
+  if (enemyType == 0) {
+    if (hardEnemyCount < golemsAmount) {
+      enemies[i] = new Golem(pos.x, pos.y, 5);
+      hardEnemyCount++;
+    } else {
+      enemies[i] = new Skull(pos.x, pos.y, 1);
+    }
+  } else if (enemyType == 1) {
+    if (random(0,4) == 0) {
+      enemies[i] = new DwarfWarrior(pos.x, pos.y, 5);
+    } else {
+      enemies[i] = new Dwarf(pos.x, pos.y, 3);
+    }
+  } else if (enemyType == 2) {
+    enemies[i] = new SkeletonCart(pos.x, pos.y, 2);
+  } else if (enemyType == 3) {
+    enemies[i] = new BombFrog(pos.x, pos.y, 1);
+  } else {
+    enemies[i] = new BloodSkull(pos.x, pos.y, 1);
+  }
+  world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
+}
+
 bool EnemyManager::isFloorTaken(byte x, byte y) {
-  for (short i = -1; i <= 1; ++i) {
-    for (short j = -1; j <= 1; ++j) {
+  for (short i = -2; i <= 2; ++i) {
+    for (short j = -2; j <= 2; ++j) {
       if (player.posX+i == x && player.posY+j == y) {
         return true;
       }
@@ -85,7 +129,7 @@ bool EnemyManager::isFloorTaken(byte x, byte y) {
 void EnemyManager::drawEnemies() {
   for (byte i = 0; i < world.maxEnemies; ++i) {
     Character* ch = enemies[i];
-    ch->draw(camera.screenPosX(ch->posX) - 2, camera.screenPosY(ch->posY));
+    ch->draw(camera.screenPosX(ch->posX), camera.screenPosY(ch->posY));
   }
 }
 
@@ -94,6 +138,16 @@ void EnemyManager::cleanUpEnemies() {
     delete enemies[i];
   }
 }
+
+void EnemyManager::explosion(byte posX, byte posY, byte sameId) {
+    for (byte i = 0; i < world.maxEnemies; ++i) {
+      Character* ch = enemies[i];
+      
+      if (sameId != i && ch->isAlive && ch->posX >= posX-1 && ch->posX <= posX+1 && ch->posY >= posY-1 && ch->posY <= posY+1) {
+        ch->takeDamage(1);
+      }
+    }
+  }
 
 EnemyManager enemyManager;
 

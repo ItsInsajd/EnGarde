@@ -18,3 +18,10 @@ bool Vec::operator!=(const Vec& b) {
 
   return !(vec.x != b.x && vec.y != b.y);
 }
+
+Vec Utils::calculateDirection(Vec source, Vec target) {
+  short x = target.x > source.x ? 1 : -1;
+  short y = target.y > source.y ? 1 : -1;
+
+  return Vec(x, y);
+}
