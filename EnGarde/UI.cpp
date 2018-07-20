@@ -258,7 +258,7 @@ void UI::arcadeAction() {
     } else if (selectedSkill.id == 2) {
       player.longArms = true;
     } else if (selectedSkill.id == 3) {
-      if (player.dmg <= 2) {
+      if (player.dmg < 2) {
         skills[availableSkills[arcadeSkillSelection]].isAvailable = true;
         skills[availableSkills[arcadeSkillSelection]].cost *= 2;
       }
@@ -272,7 +272,7 @@ void UI::arcadeAction() {
     } else if (selectedSkill.id == 7) {
       player.comboGod = true;
     } else if (selectedSkill.id == 8) {
-      if (player.armor < 2) {
+      if (player.armor < 1) {
         skills[availableSkills[arcadeSkillSelection]].isAvailable = true;
         skills[availableSkills[arcadeSkillSelection]].cost *= 2;
       }

@@ -129,7 +129,15 @@ bool EnemyManager::isFloorTaken(byte x, byte y) {
 void EnemyManager::drawEnemies() {
   for (byte i = 0; i < world.maxEnemies; ++i) {
     Character* ch = enemies[i];
-    ch->draw(camera.screenPosX(ch->posX), camera.screenPosY(ch->posY));
+    if (!ch->isAlive) {
+      ch->draw(camera.screenPosX(ch->posX), camera.screenPosY(ch->posY));
+    }
+  }
+  for (byte i = 0; i < world.maxEnemies; ++i) {
+    Character* ch = enemies[i];
+    if (ch->isAlive) {
+      ch->draw(camera.screenPosX(ch->posX), camera.screenPosY(ch->posY));
+    }
   }
 }
 
