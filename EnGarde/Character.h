@@ -15,6 +15,7 @@ class Character {
     bool explosionRound = false;
     byte gold;
     byte dmg;
+    byte frozenTimer;
 
     Character();
     Character(byte _posX, byte _posY, byte _moveDelay, byte _baseHp);
@@ -190,6 +191,34 @@ class BombGoblin : public BombFrog {
     void takeDamage(byte dmg);
   private:
     byte stunTimer;
+};
+
+class FireRemnant : public Enemy {
+  public:
+    FireRemnant(byte _posX, byte _posY, byte _baseHp);
+    void takeAction(byte x, byte y);
+    void draw(int x, int y);
+    void takeDamage(byte dmg);
+};
+
+class IceRemnant : public FireRemnant {
+  public:
+    byte freezeCd;
+    IceRemnant(byte _posX, byte _posY, byte _baseHp);
+    void takeAction(byte x, byte y);
+    void draw(int x, int y);
+};
+
+class Blob : public Character {
+  public:
+    Blob(byte _posX, byte _posY, byte _baseHp);
+    void takeAction(byte x, byte y);
+    void draw(int x, int y);
+};
+
+class CursedGhost : public Ghost {
+  public:
+    CursedGhost(byte _posX, byte _posY, byte _baseHp);
 };
 
 extern Player player;
