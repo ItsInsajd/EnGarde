@@ -214,6 +214,10 @@ class Blob : public Character {
     Blob(byte _posX, byte _posY, byte _baseHp);
     void takeAction(byte x, byte y);
     void draw(int x, int y);
+    void explode();
+  private:
+    byte state;
+    byte splashTimer;
 };
 
 class CursedGhost : public Ghost {

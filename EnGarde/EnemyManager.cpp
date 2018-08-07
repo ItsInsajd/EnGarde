@@ -123,7 +123,7 @@ void EnemyManager::spawnCryptEnemies(Vec pos, byte i) {
   } else if (enemyType == 2) {
     enemies[i] = new BloodSkull(pos.x, pos.y, 1);
   } else if (enemyType == 3) {
-    enemies[i] = new CursedGhost(pos.x, pos.y, 1);
+    enemies[i] = new Blob(pos.x, pos.y, 1);
   } else {
     enemies[i] = new Rat(pos.x, pos.y, 2);
   }
