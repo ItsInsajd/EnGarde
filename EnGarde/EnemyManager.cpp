@@ -39,7 +39,9 @@ void EnemyManager::createEnemies() {
         enemies[i] = new Necromancer(pos.x, pos.y, 7);
       } else if (world.currentWorld == 2) {
         enemies[i] = new BombGoblin(pos.x, pos.y, 10);
-      } else {
+      } else if (world.currentWorld == 3) {
+        enemies[i] = new EleGolem(pos.x, pos.y, 5);
+      }  else {
         enemies[i] = new Necromancer(pos.x, pos.y, 7);
       }
       world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
@@ -125,7 +127,7 @@ void EnemyManager::spawnCryptEnemies(Vec pos, byte i) {
   } else if (enemyType == 3) {
     enemies[i] = new Blob(pos.x, pos.y, 1);
   } else {
-    enemies[i] = new Rat(pos.x, pos.y, 2);
+    enemies[i] = new Bat(pos.x, pos.y, 2);
   }
   world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
 }

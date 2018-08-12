@@ -30,10 +30,12 @@ class Character {
 
   protected:
     const Vec directions[4] = { Vec(0, -1), Vec(1, 0), Vec(0, 1), Vec(-1, 0) };
+    const Vec diagonals[4] = { Vec(1, 1), Vec(1, -1), Vec(-1, 1), Vec(-1, -1) };
     int moveCounter;
     short moveDir;
     
     Vec getDirection();
+    Vec getDiagonalDirection();
     byte subtractHp(byte value);
     void drawLoot(byte x, byte y);
     void defaultAction(Vec dir, int damage);
@@ -56,7 +58,7 @@ class Player : public Character {
     bool comboGod;
     bool longArms;
     bool shovel;
-
+    
     Player();
     Player(byte _posX, byte _posY);
     void init();
@@ -195,6 +197,8 @@ class BombGoblin : public BombFrog {
 
 class FireRemnant : public Enemy {
   public:
+    bool actionAfterDeath;
+    bool playerOnPosition;
     FireRemnant(byte _posX, byte _posY, byte _baseHp);
     void takeAction(byte x, byte y);
     void draw(int x, int y);
@@ -223,6 +227,29 @@ class Blob : public Character {
 class CursedGhost : public Ghost {
   public:
     CursedGhost(byte _posX, byte _posY, byte _baseHp);
+};
+
+class Bat : public Character {
+  public:
+    Vec currentDir;
+    Bat(byte _posX, byte _posY, byte _baseHp);
+    void takeAction(byte x, byte y);
+    void draw(int x, int y);
+};
+
+class EleGolem : public Character {
+  public:
+    EleGolem(byte _posX, byte _posY, byte _baseHp);
+    void takeAction(byte x, byte y);
+    void draw(int x, int y);
+    void takeDamage(byte dmg);
+  private:
+    byte punchAnimationTime;
+    byte eleSpaceCounter;
+    Vec eleSpaces[5];
+    byte eleSpaceTypes[5];
+    byte isPlayerOnPos[5];
+    byte freezeCd;
 };
 
 extern Player player;
