@@ -133,6 +133,7 @@ namespace Game {
       player.changeDirection(_left);
       advanceTurn(-1, 0);
     } else if (gb.buttons.pressed(BUTTON_B)) {
+      soundManager.playFX(SKIP);
       TurnManager::resetTurnTime();
       enemyMove();
     }

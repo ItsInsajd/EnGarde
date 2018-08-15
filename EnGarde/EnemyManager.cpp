@@ -173,7 +173,7 @@ void EnemyManager::explosion(byte posX, byte posY, byte sameId) {
     Character* ch = enemies[i];
     
     if (sameId != i && ch->isAlive && ch->posX >= posX-1 && ch->posX <= posX+1 && ch->posY >= posY-1 && ch->posY <= posY+1) {
-      ch->takeDamage(1);
+      ch->takeDamage(1, DMG_EXPLOSION);
     }
   }
 }

@@ -3,6 +3,10 @@
 #include "Utils.h"
 #include "Constants.h"
 
+#define DMG_NORMAL 0
+#define DMG_EXPLOSION 1
+#define DMG_BURN 2
+
 class Character {
   public:
     bool isAlive;
@@ -21,8 +25,9 @@ class Character {
     Character(byte _posX, byte _posY, byte _moveDelay, byte _baseHp);
     void changeDirection(short dir);
     byte getTurnCounter();
+    void freeze(byte freezeTime);
     virtual void setPosition(byte x, byte y);
-    virtual void takeDamage(byte dmg);
+    virtual void takeDamage(byte dmg, byte soundEffect = DMG_NORMAL);
     virtual void draw(int x, int y);
     virtual bool doesCollideWithWall(byte x, byte y);
     virtual void takeAction(byte x, byte y);
@@ -66,7 +71,7 @@ class Player : public Character {
     void drawGui();
     void draw(int x, int y);
     void takeAction(byte x, byte y);
-    void takeDamage(byte dmg);
+    void takeDamage(byte dmg, byte soundEffect = DMG_NORMAL);
     void heal(byte hp);
     bool doesCollideWithWall(byte x, byte y);
     byte calculateDmg();
@@ -80,7 +85,7 @@ class Chest : public Character {
     byte content;
     Chest(byte _posX, byte _posY);
     void draw(int x, int y);
-    void takeDamage(byte dmg);
+    void takeDamage(byte dmg, byte soundEffect = DMG_NORMAL);
     void pickLoot();
 };
 
@@ -177,7 +182,7 @@ class BombFrog : public Character {
     BombFrog(byte _posX, byte _posY, byte _baseHp);
     void takeAction(byte x, byte y);
     void draw(int x, int y);
-    void takeDamage(byte dmg);
+    void takeDamage(byte dmg, byte soundEffect = DMG_NORMAL);
   protected:
     byte bombTimer;
     byte explosionTimer;
@@ -190,7 +195,7 @@ class BombGoblin : public BombFrog {
     BombGoblin(byte _posX, byte _posY, byte _baseHp);
     void takeAction(byte x, byte y);
     void draw(int x, int y);
-    void takeDamage(byte dmg);
+    void takeDamage(byte dmg, byte soundEffect = DMG_NORMAL);
   private:
     byte stunTimer;
 };
@@ -202,7 +207,7 @@ class FireRemnant : public Enemy {
     FireRemnant(byte _posX, byte _posY, byte _baseHp);
     void takeAction(byte x, byte y);
     void draw(int x, int y);
-    void takeDamage(byte dmg);
+    void takeDamage(byte dmg, byte soundEffect = DMG_NORMAL);
 };
 
 class IceRemnant : public FireRemnant {
@@ -242,7 +247,7 @@ class EleGolem : public Character {
     EleGolem(byte _posX, byte _posY, byte _baseHp);
     void takeAction(byte x, byte y);
     void draw(int x, int y);
-    void takeDamage(byte dmg);
+    void takeDamage(byte dmg, byte soundEffect = DMG_NORMAL);
   private:
     byte punchAnimationTime;
     byte eleSpaceCounter;
