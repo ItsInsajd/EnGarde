@@ -249,6 +249,7 @@ class EleGolem : public Character {
     void draw(int x, int y);
     void takeDamage(byte dmg, byte soundEffect = DMG_NORMAL);
   private:
+    byte moveTimer;
     byte punchAnimationTime;
     byte eleSpaceCounter;
     Vec eleSpaces[5];

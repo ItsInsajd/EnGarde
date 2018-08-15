@@ -1327,8 +1327,9 @@ void Bat::takeAction(byte x, byte y) {
 }
 
 EleGolem::EleGolem(byte _posX, byte _posY, byte _baseHp)
-  : Character(_posX, _posY, 4, _baseHp) {
+  : Character(_posX, _posY, 1, _baseHp) {
     punchAnimationTime = 0;
+    moveTimer = 0;
     eleSpaceCounter = 0;
     gold = 20;
     freezeCd = 0;
@@ -1381,8 +1382,11 @@ void EleGolem::takeAction(byte x, byte y) {
         isPlayerOnPos[i] = false;
       }
     } else {
-      if (freezeCd > 0) freezeCd--;
-      if (eleSpaces[i].x == player.posX && eleSpaces[i].y == player.posY && freezeCd == 0) {
+      if (eleSpaces[i].x == player.posX && eleSpaces[i].y == player.posY) {
+        if (freezeCd > 0) { 
+          freezeCd--;
+          continue;
+        }
         if (isPlayerOnPos[i]) {
           player.freeze(1);
           freezeCd = 2;
@@ -1395,6 +1399,9 @@ void EleGolem::takeAction(byte x, byte y) {
     }
   }
   if(!isAlive) return;
+  moveTimer++;
+  if (moveTimer < 4) return;
+  moveTimer = 0;
 
   Vec nextPos = astar.getNextTile(Vec(posX, posY), Vec(player.posX, player.posY), true);
 
