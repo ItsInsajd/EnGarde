@@ -39,7 +39,7 @@ Skill skills[12] = {
   Skill(6, "God's grace", "1 UP", 100),
   Skill(7, "Combo god", "Dmg+1 at 3x combo", 65),
   Skill(8, "Armor up", "Armor +1", 70),
-  Skill(9, "Shovel", "Dig walls", 50)
+  Skill(9, "Shovel", "Dig walls", 30)
 };
 
 Skill::Skill(byte _id, char* _name, char* _desc, byte _cost) {

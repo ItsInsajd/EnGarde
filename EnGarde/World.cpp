@@ -27,8 +27,8 @@ const uint8_t statueData[] = {8, 8, 1, 0, 0, 0x0E, 1, 0xe4, 0x44,0x44, 0x4e,0xe9
 Image statue = Image(statueData);
 
 void World::init() {
-  currentWorld = 3;
-  currentLevel = 3;
+  currentWorld = 1;
+  currentLevel = 0;
 }
 
 void World::create() {
