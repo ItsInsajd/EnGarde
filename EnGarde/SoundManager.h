@@ -13,6 +13,10 @@
 #define REROLL 8
 #define LACK_OF_GOLD 9
 #define EXPLOSION 10
+#define SKIP 11
+#define BURNED 12
+#define FROZEN 13
+#define THUNDER 14
 
 class SoundManager {
   public:
@@ -20,7 +24,7 @@ class SoundManager {
     
     void playFX(byte trackNumber);
   private:
-    char* tracks[11] = { 
+    char* tracks[15] = { 
       "coin.wav", 
       "enemyHit.wav", 
       "enemyHit2.wav", 
@@ -31,7 +35,11 @@ class SoundManager {
       "skillUp.wav", 
       "reroll.wav", 
       "lackOfGold.wav",
-      "explosion.wav"
+      "explosion.wav",
+      "skip.wav",
+      "burned.wav",
+      "frozen.wav",
+      "thunder.wav"
     };
 };
 

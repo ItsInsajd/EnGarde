@@ -82,6 +82,9 @@ void UI::showMainMenu() {
     }
   } else {
     mainMenuAnim--;
+    if (mainMenuAnim == 32) {
+      soundManager.playFX(THUNDER);
+    }
     if (mainMenuAnim <= 24) {
       mainMenu.setFrame(5);
     }

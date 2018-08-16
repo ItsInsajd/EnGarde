@@ -133,6 +133,7 @@ namespace Game {
       player.changeDirection(_left);
       advanceTurn(-1, 0);
     } else if (gb.buttons.pressed(BUTTON_B)) {
+      soundManager.playFX(SKIP);
       TurnManager::resetTurnTime();
       enemyMove();
     }
@@ -144,6 +145,11 @@ namespace Game {
   }
   
   void advanceTurn(int x, int y) {
+    if (player.frozenTimer > 0) {
+      player.frozenTimer--;
+      enemyMove();
+      return;
+    }
     Vec newPos = Vec(player.posX + x, player.posY + y);
     if (newPos.x == world.arcadePos.x && newPos.y == world.arcadePos.y) {
       if (world.enemyCount > 0) {

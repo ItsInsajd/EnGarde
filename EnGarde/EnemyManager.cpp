@@ -39,7 +39,9 @@ void EnemyManager::createEnemies() {
         enemies[i] = new Necromancer(pos.x, pos.y, 7);
       } else if (world.currentWorld == 2) {
         enemies[i] = new BombGoblin(pos.x, pos.y, 10);
-      } else {
+      } else if (world.currentWorld == 3) {
+        enemies[i] = new EleGolem(pos.x, pos.y, 5);
+      }  else {
         enemies[i] = new Necromancer(pos.x, pos.y, 7);
       }
       world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
@@ -52,6 +54,8 @@ void EnemyManager::createEnemies() {
         spawnGraveyardEnemies(pos, i);
       } else if (world.currentWorld == 2) {
         spawnMineEnemies(pos, i);
+      } else if (world.currentWorld == 3) {
+        spawnCryptEnemies(pos, i);
       } else {
         spawnGraveyardEnemies(pos, i);
       }
@@ -111,6 +115,23 @@ void EnemyManager::spawnMineEnemies(Vec pos, byte i) {
   world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
 }
 
+void EnemyManager::spawnCryptEnemies(Vec pos, byte i) {
+  byte enemyType = random(0, 5);
+
+  if (enemyType == 0) {
+    enemies[i] = new IceRemnant(pos.x, pos.y, 3);
+  } else if (enemyType == 1) {
+    enemies[i] = new FireRemnant(pos.x, pos.y, 3);
+  } else if (enemyType == 2) {
+    enemies[i] = new BloodSkull(pos.x, pos.y, 1);
+  } else if (enemyType == 3) {
+    enemies[i] = new Blob(pos.x, pos.y, 1);
+  } else {
+    enemies[i] = new Bat(pos.x, pos.y, 2);
+  }
+  world.world[pos.x][pos.y] = world.world[pos.x][pos.y] + 3;
+}
+
 bool EnemyManager::isFloorTaken(byte x, byte y) {
   for (short i = -2; i <= 2; ++i) {
     for (short j = -2; j <= 2; ++j) {
@@ -148,14 +169,14 @@ void EnemyManager::cleanUpEnemies() {
 }
 
 void EnemyManager::explosion(byte posX, byte posY, byte sameId) {
-    for (byte i = 0; i < world.maxEnemies; ++i) {
-      Character* ch = enemies[i];
-      
-      if (sameId != i && ch->isAlive && ch->posX >= posX-1 && ch->posX <= posX+1 && ch->posY >= posY-1 && ch->posY <= posY+1) {
-        ch->takeDamage(1);
-      }
+  for (byte i = 0; i < world.maxEnemies; ++i) {
+    Character* ch = enemies[i];
+    
+    if (sameId != i && ch->isAlive && ch->posX >= posX-1 && ch->posX <= posX+1 && ch->posY >= posY-1 && ch->posY <= posY+1) {
+      ch->takeDamage(1, DMG_EXPLOSION);
     }
   }
+}
 
 EnemyManager enemyManager;
 
